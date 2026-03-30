@@ -346,9 +346,9 @@ function renderActivePanel() {
 
       <!-- Column mapper (shown after CSV upload) -->
       <div class="mapper" id="mapper_${src.id}">
-        <div class="mapper-title">Map your columns → required fields</div>
+        <div class="mapper-title">Map columns &nbsp;<span style="color:var(--text3);font-weight:400;font-size:9px;">✓ auto-detected &nbsp;? needs manual mapping</span></div>
         <div class="mapper-grid" id="mapgrid_${src.id}"></div>
-        <button class="tbl-btn" style="margin-top:10px;" onclick="applyMapping('${src.id}')">Apply mapping</button>
+        <button class="tbl-btn" style="margin-top:10px;border-color:var(--accent);color:var(--accent);" onclick="applyMapping('${src.id}')">✓ Confirm & import data</button>
       </div>
 
       <!-- Editable table -->
@@ -442,36 +442,59 @@ function readCSV(file, srcId) {
     const zt = document.getElementById('zt_' + srcId);
     if (zt) zt.textContent = '✓ ' + file.name + ' (' + rawRows.length + ' rows)';
     const zs = document.getElementById('zs_' + srcId);
-    if (zs) zs.textContent = headers.length + ' columns detected';
+    const detected = Object.values(autoMap(headers)).filter(v => v !== null).length;
+    if (zs) zs.textContent = headers.length + ' columns found · ' + detected + '/' + FIELDS.length + ' fields auto-mapped';
 
-    // Auto-map
+    // Auto-map — always show mapper so user can confirm or fix detections
     const mapping = autoMap(headers);
     src._mapping = mapping;
-
-    // Show mapper if any field is unresolved
-    const unresolved = FIELDS.filter(f => f !== 'channel' && mapping[f] === null);
-    if (unresolved.length > 0) {
-      showMapper(srcId, headers, mapping);
-    } else {
-      applyMapping(srcId);
-    }
+    showMapper(srcId, headers, mapping);
   };
   reader.readAsText(file);
 }
 
 const ALIASES = {
-  channel:     ['channel','source','platform','campaign','medium','ad channel','ad source','network'],
-  spend:       ['spend','cost','amount spent','budget','ad spend','total spend','total cost','investment','expenditure'],
-  impressions: ['impressions','impr','views','reach'],
-  clicks:      ['clicks','click','link clicks','total clicks'],
-  conversions: ['conversions','conv','purchases','orders','sales','transactions','leads','results'],
-  revenue:     ['revenue','sales revenue','total revenue','value','conversion value','purchase value','roas value','income'],
+  channel: [
+    'channel','source','platform','campaign name','campaign','ad group name','ad group',
+    'medium','ad channel','ad source','network','placement','publisher','audience name',
+    'session source','ad name','line item','ad set name','ad set'
+  ],
+  spend: [
+    'spend','cost','amount spent','budget','ad spend','total spend','total cost',
+    'investment','expenditure','charges','billed','media cost','gross spend',
+    'amount','total amount','net spend','media spend'
+  ],
+  impressions: [
+    'impressions','impr','impression','views','reach','exposure','served impressions',
+    'total impressions','ad impressions','gross impressions'
+  ],
+  clicks: [
+    'clicks','click','link clicks','total clicks','outbound clicks','tap','taps',
+    'ad clicks','website clicks','ctr clicks','sessions'
+  ],
+  conversions: [
+    'conversions','conv','purchases','orders','sales','transactions','leads',
+    'results','actions','goals','goal completions','events','installs',
+    'total conversions','website purchases','purchase events','new contacts'
+  ],
+  revenue: [
+    'revenue','sales revenue','total revenue','value','conversion value',
+    'purchase value','roas value','income','purchase conversion value',
+    'conv. value','total value','revenue (usd)','gross revenue','net revenue',
+    'total revenue (usd)','attributed revenue','reported revenue'
+  ],
 };
 
 function autoMap(headers) {
   const mapping = {};
   FIELDS.forEach(f => {
-    const found = headers.findIndex(h => ALIASES[f]?.some(a => h.includes(a)));
+    const found = headers.findIndex(h => {
+      const hn = h.trim().toLowerCase().replace(/[()[\]_-]/g,' ').replace(/\s+/g,' ');
+      return ALIASES[f].some(a => {
+        const an = a.toLowerCase();
+        return hn === an || hn.startsWith(an + ' ') || hn.endsWith(' ' + an) || hn.includes(' ' + an + ' ');
+      });
+    });
     mapping[f] = found >= 0 ? found : null;
   });
   return mapping;
@@ -483,14 +506,20 @@ function showMapper(srcId, headers, mapping) {
   if (!mapper || !grid) return;
   mapper.classList.add('visible');
 
-  const opts = ['— skip —', ...headers].map((h,i) => `<option value="${i-1}">${h}</option>`).join('');
-  grid.innerHTML = FIELDS.map(f => `
-    <div class="map-item">
-      <label>${FIELD_LABELS[FIELDS.indexOf(f)]}</label>
-      <select id="map_${srcId}_${f}">
-        ${['— skip —', ...headers].map((h,i) => `<option value="${i-1}" ${mapping[f]===i-1?'selected':''}>${h}</option>`).join('')}
+  grid.innerHTML = FIELDS.map(f => {
+    const detected = mapping[f] !== null;
+    const dot = detected
+      ? '<span style="color:#00e5a0;font-size:10px;margin-left:4px;" title="Auto-detected">✓</span>'
+      : '<span style="color:#ff6b35;font-size:10px;margin-left:4px;" title="Not detected — please map manually">?</span>';
+    const opts = ['— skip —', ...headers].map((h,i) =>
+      `<option value="${i-1}" ${mapping[f]===i-1?'selected':''}>${h}</option>`).join('');
+    return `<div class="map-item">
+      <label>${FIELD_LABELS[FIELDS.indexOf(f)]}${dot}</label>
+      <select id="map_${srcId}_${f}" style="border-color:${detected?'rgba(0,229,160,0.3)':'rgba(255,107,53,0.4)'}">
+        ${opts}
       </select>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function applyMapping(srcId) {
