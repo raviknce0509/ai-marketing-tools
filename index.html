@@ -4,170 +4,98 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CampaignIQ — AI Marketing Analytics</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a0b;
-    --surface: #111113;
-    --surface2: #18181c;
-    --border: rgba(255,255,255,0.07);
-    --border-hi: rgba(255,255,255,0.14);
-    --accent: #00e5a0;
-    --accent2: #7c6dfa;
-    --warn: #ff6b35;
-    --text: #f0efe8;
-    --text2: #8a8a8f;
-    --text3: #4a4a52;
-    --mono: 'DM Mono', monospace;
-    --head: 'Syne', sans-serif;
-    --body: 'DM Sans', sans-serif;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { background: var(--bg); color: var(--text); font-family: var(--body); font-size: 14px; line-height: 1.6; }
-
-  .app { min-height: 100vh; }
-  header { border-bottom: 1px solid var(--border); padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: rgba(10,10,11,0.94); backdrop-filter: blur(12px); z-index: 100; }
-  .logo { font-family: var(--head); font-weight: 800; font-size: 18px; letter-spacing: -0.03em; }
-  .logo span { color: var(--accent); }
-  .logo-sub { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.1em; margin-top: 1px; }
-  .badge { font-family: var(--mono); font-size: 10px; padding: 3px 10px; border-radius: 20px; border: 1px solid var(--accent); color: var(--accent); letter-spacing: 0.06em; }
-
-  main { max-width: 1400px; margin: 0 auto; padding: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-
-  /* Cards */
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-  .card-header { padding: 16px 22px 13px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-  .card-header-left { display: flex; align-items: baseline; gap: 10px; }
-  .card-title { font-family: var(--head); font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: var(--text); text-transform: uppercase; }
-  .card-step { font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 0.08em; }
-  .card-body { padding: 20px 22px; }
-
-  /* Source tabs */
-  .source-tabs { display: flex; gap: 3px; padding: 4px; background: var(--surface2); border-radius: 8px; overflow-x: auto; }
-  .stab { padding: 6px 14px; border-radius: 6px; font-family: var(--mono); font-size: 11px; cursor: pointer; color: var(--text2); white-space: nowrap; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
-  .stab.active { background: var(--surface); color: var(--text); }
-  .stab .remove { opacity: 0; font-size: 13px; line-height: 1; transition: opacity 0.15s; }
-  .stab:hover .remove { opacity: 0.6; }
-  .stab .remove:hover { opacity: 1; color: var(--warn); }
-  .add-source-btn { padding: 6px 12px; border-radius: 6px; font-family: var(--mono); font-size: 11px; cursor: pointer; color: var(--text3); white-space: nowrap; background: none; border: 1px dashed var(--border-hi); transition: all 0.15s; }
-  .add-source-btn:hover { color: var(--accent); border-color: var(--accent); }
-
-  /* Upload zone */
-  .upload-zone { border: 1px dashed var(--border-hi); border-radius: 9px; padding: 28px 20px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; margin-bottom: 14px; }
-  .upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: rgba(0,229,160,0.04); }
-  .upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-  .upload-icon { font-size: 22px; margin-bottom: 8px; opacity: 0.5; }
-  .upload-title { font-family: var(--mono); font-size: 12px; color: var(--text2); }
-  .upload-sub { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-top: 4px; }
-  .upload-success { border-color: var(--accent); background: rgba(0,229,160,0.06); }
-  .upload-success .upload-icon { opacity: 1; }
-
-  /* Column mapper */
-  .mapper { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 14px 16px; margin-bottom: 14px; display: none; }
-  .mapper.visible { display: block; }
-  .mapper-title { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
-  .mapper-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .map-item label { font-family: var(--mono); font-size: 10px; color: var(--accent2); letter-spacing: 0.05em; display: block; margin-bottom: 4px; }
-  .map-item select { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 5px; padding: 5px 8px; color: var(--text); font-family: var(--mono); font-size: 11px; outline: none; }
-  .map-item select:focus { border-color: var(--accent); }
-
-  /* Data table */
-  .data-table-wrap { overflow-x: auto; max-height: 260px; overflow-y: auto; border-radius: 8px; border: 1px solid var(--border); }
-  .data-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; }
-  .data-table th { color: var(--text3); font-weight: 400; text-align: left; padding: 7px 10px; letter-spacing: 0.06em; font-size: 10px; border-bottom: 1px solid var(--border); background: var(--surface2); position: sticky; top: 0; white-space: nowrap; }
-  .data-table td { padding: 4px 2px; border-bottom: 1px solid rgba(255,255,255,0.03); }
-  .data-table tr:last-child td { border-bottom: none; }
-  .data-table td input {
-    width: 100%; background: transparent; border: 1px solid transparent; border-radius: 4px; padding: 5px 8px;
-    color: var(--text); font-family: var(--mono); font-size: 11px; outline: none; transition: border-color 0.15s;
-  }
-  .data-table td input:focus { background: var(--surface2); border-color: var(--accent); }
-  .data-table td input.channel-name { color: var(--accent2); font-weight: 500; }
-  .data-table td .del-row { background: none; border: none; color: var(--text3); cursor: pointer; padding: 4px 6px; border-radius: 4px; font-size: 13px; transition: color 0.15s; }
-  .data-table td .del-row:hover { color: var(--warn); }
-
-  .table-actions { display: flex; gap: 8px; margin-top: 10px; }
-  .tbl-btn { background: none; border: 1px dashed var(--border-hi); color: var(--text2); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; transition: all 0.15s; }
-  .tbl-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* Metrics */
-  .metrics-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
-  .metric-box { background: var(--surface2); border-radius: 8px; padding: 11px 14px; border: 1px solid var(--border); }
-  .metric-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; }
-  .metric-val { font-family: var(--head); font-size: 20px; font-weight: 700; margin-top: 2px; }
-  .metric-val.good { color: var(--accent); }
-  .metric-val.warn { color: var(--warn); }
-  .metric-val.neutral { color: var(--text); }
-
-  /* Context panel */
-  .input-group { margin-bottom: 14px; }
-  .input-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; display: block; }
-  .input-field { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; padding: 9px 12px; color: var(--text); font-family: var(--body); font-size: 13px; outline: none; transition: border-color 0.2s; resize: vertical; }
-  .input-field:focus { border-color: var(--accent); }
-  select.input-field option { background: var(--surface2); }
-
-  /* Merge summary */
-  .merge-pill { display: inline-flex; align-items: center; gap: 5px; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; font-family: var(--mono); font-size: 10px; color: var(--text2); margin-right: 5px; margin-bottom: 5px; }
-  .merge-pill .dot { width: 6px; height: 6px; border-radius: 50%; }
-
-  /* Run button */
-  .run-btn { width: 100%; padding: 13px; background: var(--accent); color: #000; font-family: var(--head); font-size: 14px; font-weight: 700; letter-spacing: 0.04em; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
-  .run-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 24px rgba(0,229,160,0.28); }
-  .run-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
-  .run-btn.loading { background: var(--surface2); color: var(--accent); border: 1px solid var(--accent); }
-
-  /* Output */
-  .output-panel { grid-column: 1 / -1; }
-  .output-empty { text-align: center; padding: 48px 24px; }
-  .output-empty .icon { font-size: 32px; margin-bottom: 10px; opacity: 0.25; }
-  .output-empty p { color: var(--text3); font-family: var(--mono); font-size: 12px; }
-
-  .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
-  .result-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 15px 17px; position: relative; overflow: hidden; }
-  .result-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
-  .result-card.green::before { background: var(--accent); }
-  .result-card.purple::before { background: var(--accent2); }
-  .result-card.orange::before { background: var(--warn); }
-  .rc-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
-  .rc-content { font-size: 13px; color: var(--text); line-height: 1.65; }
-  .rc-content strong { color: var(--accent); font-weight: 500; }
-  .rc-content .warn-text { color: var(--warn); font-weight: 500; }
-
-  .channel-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; padding: 9px 13px; background: var(--surface2); border-radius: 8px; border: 1px solid var(--border); }
-  .ch-name { font-family: var(--mono); font-size: 11px; color: var(--accent2); width: 120px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .ch-source { font-family: var(--mono); font-size: 10px; color: var(--text3); width: 70px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .ch-bar-bg { flex: 1; height: 5px; background: var(--bg); border-radius: 3px; overflow: hidden; }
-  .ch-bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
-  .ch-score { font-family: var(--mono); font-size: 11px; width: 30px; text-align: right; flex-shrink: 0; }
-  .ch-rec { font-size: 11px; flex: 0 0 80px; text-align: right; }
-
-  .copy-block { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 17px 19px; margin-top: 16px; position: relative; }
-  .copy-block-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
-  .copy-btn { position: absolute; top: 13px; right: 13px; background: var(--surface); border: 1px solid var(--border-hi); color: var(--text2); padding: 5px 11px; border-radius: 5px; cursor: pointer; font-family: var(--mono); font-size: 11px; transition: all 0.15s; }
-  .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
-
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-  .cursor { display: inline-block; width: 2px; height: 13px; background: var(--accent); margin-left: 2px; vertical-align: middle; animation: blink 0.8s infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid var(--accent); border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 7px; }
-
-  .watermark { text-align: center; padding: 24px; color: var(--text3); font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; grid-column: 1/-1; }
-
-  /* CSV template hint */
-  .template-hint { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-top: 6px; }
-  .template-hint a { color: var(--accent2); cursor: pointer; text-decoration: none; }
-  .template-hint a:hover { text-decoration: underline; }
-
-  @media (max-width: 900px) {
-    main { grid-template-columns: 1fr; padding: 16px; }
-    .output-panel { grid-column: 1; }
-    .result-grid { grid-template-columns: 1fr; }
-    .mapper-grid { grid-template-columns: 1fr 1fr; }
-  }
+:root{--bg:#0a0a0b;--surface:#111113;--surface2:#18181c;--border:rgba(255,255,255,0.07);--border-hi:rgba(255,255,255,0.14);--accent:#00e5a0;--accent2:#7c6dfa;--warn:#ff6b35;--text:#f0efe8;--text2:#8a8a8f;--text3:#4a4a52;--mono:'DM Mono',monospace;--head:'Syne',sans-serif;--body:'DM Sans',sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14px;line-height:1.6;}
+header{border-bottom:1px solid var(--border);padding:18px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(10,10,11,0.94);backdrop-filter:blur(12px);z-index:100;}
+.logo{font-family:var(--head);font-weight:800;font-size:18px;letter-spacing:-0.03em;}
+.logo span{color:var(--accent);}
+.logo-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.1em;margin-top:1px;}
+.badge{font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:20px;border:1px solid var(--accent);color:var(--accent);letter-spacing:0.06em;}
+main{max-width:1400px;margin:0 auto;padding:32px;display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.card-header{padding:16px 22px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-hl{display:flex;align-items:baseline;gap:10px;}
+.card-title{font-family:var(--head);font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;}
+.card-step{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:0.08em;}
+.card-body{padding:20px 22px;}
+.upload-zone{border:1px dashed var(--border-hi);border-radius:9px;padding:30px 20px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:rgba(0,229,160,0.04);}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-icon{font-size:26px;margin-bottom:8px;opacity:0.4;}
+.upload-title{font-family:var(--mono);font-size:12px;color:var(--text2);}
+.upload-sub{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:4px;}
+.upload-success{border-color:var(--accent)!important;background:rgba(0,229,160,0.06)!important;}
+.mapper{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-top:14px;display:none;}
+.mapper.visible{display:block;}
+.mapper-title{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;}
+.mapper-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.map-item label{font-family:var(--mono);font-size:10px;color:var(--accent2);letter-spacing:0.05em;display:block;margin-bottom:4px;}
+.map-item select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:5px 8px;color:var(--text);font-family:var(--mono);font-size:11px;outline:none;}
+.map-item select:focus{border-color:var(--accent);}
+.preview-wrap{overflow-x:auto;max-height:220px;overflow-y:auto;border-radius:8px;border:1px solid var(--border);margin-top:12px;}
+.ptable{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px;}
+.ptable th{background:var(--surface2);color:var(--text3);font-weight:400;text-align:left;padding:7px 10px;font-size:10px;border-bottom:1px solid var(--border);position:sticky;top:0;white-space:nowrap;}
+.ptable td{padding:6px 10px;border-bottom:1px solid rgba(255,255,255,0.03);white-space:nowrap;}
+.ptable tr:last-child td{border-bottom:none;}
+.ptable .tch{color:var(--accent2);font-weight:500;}
+.ptable .tnum{color:var(--accent);text-align:right;}
+.ptable .twarn{color:var(--warn);text-align:right;}
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;}
+.metric-box{background:var(--surface2);border-radius:8px;padding:10px 12px;border:1px solid var(--border);}
+.metric-label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;}
+.metric-val{font-family:var(--head);font-size:18px;font-weight:700;margin-top:2px;}
+.good{color:var(--accent);}.warnc{color:var(--warn);}.neutral{color:var(--text);}
+.input-group{margin-bottom:12px;}
+.input-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:5px;display:block;}
+.input-field{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:8px 12px;color:var(--text);font-family:var(--body);font-size:13px;outline:none;transition:border-color 0.2s;resize:vertical;}
+.input-field:focus{border-color:var(--accent);}
+select.input-field option{background:var(--surface2);}
+.run-btn{width:100%;padding:13px;background:var(--accent);color:#000;font-family:var(--head);font-size:14px;font-weight:700;letter-spacing:0.04em;border:none;border-radius:8px;cursor:pointer;transition:all 0.2s;text-transform:uppercase;margin-top:4px;}
+.run-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 24px rgba(0,229,160,0.28);}
+.run-btn:disabled{opacity:0.45;cursor:not-allowed;transform:none;}
+.run-btn.loading{background:var(--surface2);color:var(--accent);border:1px solid var(--accent);}
+.tbl-btn{background:none;border:1px dashed var(--border-hi);color:var(--text2);padding:6px 12px;border-radius:6px;cursor:pointer;font-family:var(--mono);font-size:11px;transition:all 0.15s;}
+.tbl-btn:hover{border-color:var(--accent);color:var(--accent);}
+.output-panel{grid-column:1/-1;}
+.output-empty{text-align:center;padding:44px 24px;}
+.output-empty .icon{font-size:30px;margin-bottom:10px;opacity:0.2;}
+.output-empty p{color:var(--text3);font-family:var(--mono);font-size:12px;}
+.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px;}
+.result-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:15px 17px;position:relative;overflow:hidden;}
+.result-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.result-card.green::before{background:var(--accent);}
+.result-card.purple::before{background:var(--accent2);}
+.result-card.orange::before{background:var(--warn);}
+.rc-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;}
+.rc-content{font-size:13px;color:var(--text);line-height:1.65;}
+.rc-content strong{color:var(--accent);font-weight:500;}
+.rc-content .wt{color:var(--warn);font-weight:500;}
+.ch-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;padding:9px 12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);}
+.ch-name{font-family:var(--mono);font-size:11px;color:var(--accent2);width:110px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ch-bar-bg{flex:1;height:5px;background:var(--bg);border-radius:3px;overflow:hidden;}
+.ch-bar-fill{height:100%;border-radius:3px;transition:width 1s ease;}
+.ch-score{font-family:var(--mono);font-size:11px;width:28px;text-align:right;flex-shrink:0;}
+.ch-rec{font-size:10px;flex:0 0 70px;text-align:right;font-family:var(--mono);}
+.copy-block{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-top:14px;position:relative;}
+.copy-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;}
+.copy-btn{position:absolute;top:13px;right:13px;background:var(--surface);border:1px solid var(--border-hi);color:var(--text2);padding:4px 11px;border-radius:5px;cursor:pointer;font-family:var(--mono);font-size:11px;transition:all 0.15s;}
+.copy-btn:hover{color:var(--accent);border-color:var(--accent);}
+.seg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
+.seg-item{background:var(--surface2);border-radius:8px;padding:10px 12px;border:1px solid var(--border);}
+.seg-name{font-family:var(--mono);font-size:10px;color:var(--accent2);margin-bottom:4px;}
+.seg-stats{font-size:11px;color:var(--text2);}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.cursor{display:inline-block;width:2px;height:13px;background:var(--accent);margin-left:2px;vertical-align:middle;animation:blink 0.8s infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid var(--accent);border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:7px;}
+.watermark{text-align:center;padding:20px;color:var(--text3);font-family:var(--mono);font-size:10px;letter-spacing:0.08em;grid-column:1/-1;}
+@media(max-width:900px){main{grid-template-columns:1fr;padding:16px;}.output-panel{grid-column:1;}.result-grid,.seg-grid{grid-template-columns:1fr;}.mapper-grid{grid-template-columns:1fr 1fr;}}
 </style>
 </head>
 <body>
-<div class="app">
 <header>
   <div>
     <div class="logo">Campaign<span>IQ</span></div>
@@ -175,52 +103,57 @@
   </div>
   <span class="badge">PORTFOLIO DEMO</span>
 </header>
-
 <main>
-
-  <!-- LEFT: Data Sources -->
+  <!-- 01: Data Input -->
   <div class="card">
     <div class="card-header">
-      <div class="card-header-left">
-        <span class="card-step">01 —</span>
-        <span class="card-title">Data Sources</span>
+      <div class="card-hl"><span class="card-step">01 —</span><span class="card-title">Campaign Data</span></div>
+      <div style="display:flex;gap:8px;">
+        <button class="tbl-btn" onclick="downloadTemplate()">↓ Template</button>
+        <button class="tbl-btn" onclick="clearAll()">Clear</button>
       </div>
-      <button class="add-source-btn" onclick="addSource()">+ Add source</button>
     </div>
     <div class="card-body">
-
-      <!-- Source tabs -->
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
-        <div class="source-tabs" id="source-tabs"></div>
+      <div class="upload-zone" id="uz" ondragover="onDrag(event)" ondragleave="offDrag()" ondrop="onDrop(event)">
+        <input type="file" accept=".csv,.tsv,.txt" onchange="onFile(event)"/>
+        <div class="upload-icon" id="ui">↑</div>
+        <div class="upload-title" id="ut">Drop CSV here or click to upload</div>
+        <div class="upload-sub" id="us">Any column naming · auto-detects fields including derived conversions &amp; revenue</div>
       </div>
-
-      <!-- Per-source panel -->
-      <div id="source-panels"></div>
-
-      <!-- Merged metrics -->
-      <div style="padding-top:14px;border-top:1px solid var(--border);margin-top:6px;">
-        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Merged totals <span id="source-pills"></span></div>
+      <div class="mapper" id="mapper">
+        <div class="mapper-title">Column mapping &nbsp;<span style="font-size:9px;font-weight:400;">✓ auto-detected &nbsp;? needs selection</span></div>
+        <div class="mapper-grid" id="mgrid"></div>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <button class="tbl-btn" style="border-color:var(--accent);color:var(--accent);" onclick="applyMapping()">✓ Confirm &amp; import</button>
+          <button class="tbl-btn" onclick="document.getElementById('mapper').classList.remove('visible')">Dismiss</button>
+        </div>
+      </div>
+      <div id="preview-section" style="display:none;">
+        <div class="preview-wrap">
+          <table class="ptable">
+            <thead id="pthead"></thead>
+            <tbody id="ptbody"></tbody>
+          </table>
+        </div>
         <div class="metrics-row">
+          <div class="metric-box"><div class="metric-label">Rows</div><div class="metric-val neutral" id="m-rows">—</div></div>
           <div class="metric-box"><div class="metric-label">Total Spend</div><div class="metric-val neutral" id="m-spend">—</div></div>
           <div class="metric-box"><div class="metric-label">Total Revenue</div><div class="metric-val good" id="m-rev">—</div></div>
-          <div class="metric-box"><div class="metric-label">Blended ROAS</div><div class="metric-val good" id="m-roas">—</div></div>
+          <div class="metric-box"><div class="metric-label">Avg ROAS</div><div class="metric-val good" id="m-roas">—</div></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- RIGHT: Context + Run -->
+  <!-- 02: Context -->
   <div class="card">
     <div class="card-header">
-      <div class="card-header-left">
-        <span class="card-step">02 —</span>
-        <span class="card-title">Campaign Context</span>
-      </div>
+      <div class="card-hl"><span class="card-step">02 —</span><span class="card-title">Campaign Context</span></div>
     </div>
     <div class="card-body">
       <div class="input-group">
         <label class="input-label">Brand / Product</label>
-        <input class="input-field" id="ctx-brand" value="CORSAIR K100 RGB Keyboard" placeholder="e.g. CORSAIR K100 RGB Keyboard"/>
+        <input class="input-field" id="ctx-brand" value="Multi-channel marketing campaign" placeholder="e.g. CORSAIR K100 RGB Keyboard"/>
       </div>
       <div class="input-group">
         <label class="input-label">Campaign Goal</label>
@@ -233,517 +166,474 @@
       </div>
       <div class="input-group">
         <label class="input-label">Target Audience</label>
-        <input class="input-field" id="ctx-audience" value="PC gamers, streamers, age 18–34, performance-focused" placeholder="e.g. PC gamers, streamers, 18–34"/>
+        <input class="input-field" id="ctx-audience" value="Mixed demographics across age groups and genders" placeholder="e.g. PC gamers, streamers, 18–34"/>
       </div>
       <div class="input-group">
         <label class="input-label">Additional Context <span style="color:var(--text3);font-size:10px;">(optional)</span></label>
-        <textarea class="input-field" id="ctx-extra" rows="3" placeholder="Competitive landscape, seasonality, budget constraints...">Q4 holiday season. Black Friday deals live. Competitor (Razer) running aggressive Meta campaigns.</textarea>
+        <textarea class="input-field" id="ctx-extra" rows="3" placeholder="Competitive landscape, seasonality, budget constraints..."></textarea>
       </div>
-      <button class="run-btn" id="run-btn" onclick="runAnalysis()">⚡ Analyze with AI</button>
+      <button class="run-btn" id="run-btn" onclick="runAnalysis()" disabled>Upload data first</button>
     </div>
   </div>
 
-  <!-- OUTPUT -->
+  <!-- 03: Output -->
   <div class="card output-panel">
     <div class="card-header">
-      <div class="card-header-left">
-        <span class="card-step">03 —</span>
-        <span class="card-title">AI Analysis & Recommendations</span>
-      </div>
+      <div class="card-hl"><span class="card-step">03 —</span><span class="card-title">AI Analysis &amp; Recommendations</span></div>
     </div>
     <div class="card-body" id="output-body">
       <div class="output-empty">
         <div class="icon">◈</div>
-        <p>Upload CSVs or enter data above, then hit Analyze.</p>
-        <p style="margin-top:5px;">Claude will return insights, budget recommendations, and ad copy.</p>
+        <p>Upload your CSV above, then hit Analyze.</p>
+        <p style="margin-top:5px;">Claude returns insights, budget reallocation, segment breakdown, and ready-to-use ad copy.</p>
       </div>
     </div>
   </div>
 
   <div class="watermark">CAMPAIGNIQ · AI-POWERED MARKETING ANALYTICS · BUILT WITH CLAUDE API</div>
 </main>
-</div>
 
 <script>
-// ─── State ────────────────────────────────────────────────────────────────────
-const FIELDS = ['channel','spend','impressions','clicks','conversions','revenue'];
-const FIELD_LABELS = ['Channel','Spend ($)','Impressions','Clicks','Conversions','Revenue ($)'];
-const SOURCE_COLORS = ['#00e5a0','#7c6dfa','#ff6b35','#facc15','#38bdf8','#f472b6'];
+// ── Config ────────────────────────────────────────────────────────────────────
+const REQ   = ['channel','spend','impressions','clicks','conversions','revenue'];
+const RLBL  = ['Channel','Spend ($)','Impressions','Clicks','Conversions','Revenue ($)'];
+const OPT   = ['company','campaign_type','target_audience','location','segment','engagement'];
+const OLBL  = ['Company','Campaign Type','Target Audience','Location','Customer Segment','Engagement Score'];
 
-let sources = [];   // [{id, name, color, rows:[{channel,spend,...}]}]
-let activeSource = null;
+const ALIASES = {
+  channel:         ['channel','channel used','source','platform','medium','ad channel','network','ad source'],
+  spend:           ['spend','cost','amount spent','budget','ad spend','total spend','acquisition cost','acquisition_cost','total cost','media cost'],
+  impressions:     ['impressions','impr','impression','views','reach','total impressions','ad impressions'],
+  clicks:          ['clicks','click','link clicks','total clicks','outbound clicks','website clicks'],
+  conversions:     ['conversions','conv','purchases','orders','sales','transactions','leads','results','actions'],
+  revenue:         ['revenue','sales revenue','total revenue','value','conversion value','purchase value','income','gross revenue'],
+  company:         ['company','brand','advertiser','client','account name','account'],
+  campaign_type:   ['campaign type','campaign_type','type','ad type','format'],
+  target_audience: ['target audience','target_audience','audience','demographic','targeting'],
+  location:        ['location','city','region','geo','market','country'],
+  segment:         ['customer segment','segment','customer_segment','audience segment','category'],
+  engagement:      ['engagement','engagement score','engagement_score','score'],
+};
 
-// ─── Init ─────────────────────────────────────────────────────────────────────
-function init() {
-  addSource('Meta Ads', [
-    {channel:'Paid Search',  spend:4200, impressions:280000, clicks:8400,  conversions:210, revenue:18900},
-    {channel:'Meta Ads',     spend:3100, impressions:520000, clicks:6240,  conversions:93,  revenue:7440},
-    {channel:'Email',        spend:800,  impressions:95000,  clicks:9500,  conversions:285, revenue:22800},
-    {channel:'TikTok Ads',   spend:2200, impressions:890000, clicks:5340,  conversions:53,  revenue:3710},
-    {channel:'YouTube',      spend:1800, impressions:340000, clicks:2380,  conversions:71,  revenue:6390},
-  ]);
-}
+// ── State ─────────────────────────────────────────────────────────────────────
+let csvHeaders=[], csvRaw=[], rows=[], mapping={};
 
-function addSource(name, rows) {
-  const id = 'src_' + Date.now();
-  const color = SOURCE_COLORS[sources.length % SOURCE_COLORS.length];
-  const srcName = name || ('Source ' + (sources.length + 1));
-  sources.push({ id, name: srcName, color, rows: rows || [] });
-  activeSource = id;
-  renderTabs();
-  renderActivePanel();
-  recalc();
-}
+// ── Upload ────────────────────────────────────────────────────────────────────
+function onDrag(e){e.preventDefault();document.getElementById('uz').classList.add('drag');}
+function offDrag(){document.getElementById('uz').classList.remove('drag');}
+function onDrop(e){e.preventDefault();offDrag();const f=e.dataTransfer.files[0];if(f)readCSV(f);}
+function onFile(e){const f=e.target.files[0];if(f)readCSV(f);}
 
-function removeSource(id, e) {
-  e.stopPropagation();
-  sources = sources.filter(s => s.id !== id);
-  if (activeSource === id) activeSource = sources.length ? sources[sources.length-1].id : null;
-  if (!sources.length) addSource();
-  else { renderTabs(); renderActivePanel(); recalc(); }
-}
+function readCSV(file){
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const text=e.target.result.replace(/^\uFEFF/,'');
+    const firstLine=text.split(/\r?\n/)[0];
+    const delim=(firstLine.split(';').length > firstLine.split(',').length)?';':',';
+    const lines=text.trim().split(/\r?\n/).filter(l=>l.trim());
+    if(lines.length<2)return alert('CSV needs a header row and at least one data row.');
 
-function switchSource(id) {
-  activeSource = id;
-  renderTabs();
-  renderActivePanel();
-}
+    csvHeaders=parseL(lines[0],delim).map(h=>h.trim());
+    csvRaw=lines.slice(1).map(l=>parseL(l,delim));
 
-// ─── Tabs ─────────────────────────────────────────────────────────────────────
-function renderTabs() {
-  const tabsEl = document.getElementById('source-tabs');
-  tabsEl.innerHTML = sources.map(s => `
-    <div class="stab ${s.id === activeSource ? 'active' : ''}" onclick="switchSource('${s.id}')">
-      <span style="width:6px;height:6px;border-radius:50%;background:${s.color};flex-shrink:0;display:inline-block;"></span>
-      <span ondblclick="renameSource('${s.id}',this)" title="Double-click to rename">${esc(s.name)}</span>
-      <span class="remove" onclick="removeSource('${s.id}',event)">×</span>
-    </div>`).join('');
-}
+    document.getElementById('uz').classList.add('upload-success');
+    document.getElementById('ui').textContent='✓';
+    document.getElementById('ut').textContent=`✓  ${file.name}  (${csvRaw.length} rows · ${csvHeaders.length} columns)`;
+    document.getElementById('us').textContent='Mapping columns...';
 
-function renameSource(id, el) {
-  const src = sources.find(s => s.id === id);
-  if (!src) return;
-  const val = prompt('Rename source:', src.name);
-  if (val && val.trim()) { src.name = val.trim(); renderTabs(); recalc(); }
-}
+    mapping=autoMap(csvHeaders);
+    tryDerive();
 
-// ─── Panel ────────────────────────────────────────────────────────────────────
-function renderActivePanel() {
-  const container = document.getElementById('source-panels');
-  const src = sources.find(s => s.id === activeSource);
-  if (!src) { container.innerHTML = ''; return; }
-
-  container.innerHTML = `
-    <div id="panel_${src.id}">
-      <!-- Upload zone -->
-      <div class="upload-zone" id="zone_${src.id}" ondragover="onDrag(event,'${src.id}')" ondragleave="offDrag('${src.id}')" ondrop="onDrop(event,'${src.id}')">
-        <input type="file" accept=".csv,.tsv,.txt" onchange="onFile(event,'${src.id}')"/>
-        <div class="upload-icon" id="zi_${src.id}">↑</div>
-        <div class="upload-title" id="zt_${src.id}">Drop CSV here or click to upload</div>
-        <div class="upload-sub" id="zs_${src.id}">Supports .csv and .tsv — any column order</div>
-      </div>
-      <div class="template-hint">No CSV? <a onclick="downloadTemplate()">Download template</a> · or enter data manually below</div>
-
-      <!-- Column mapper (shown after CSV upload) -->
-      <div class="mapper" id="mapper_${src.id}">
-        <div class="mapper-title">Map columns &nbsp;<span style="color:var(--text3);font-weight:400;font-size:9px;">✓ auto-detected &nbsp;? needs manual mapping</span></div>
-        <div class="mapper-grid" id="mapgrid_${src.id}"></div>
-        <button class="tbl-btn" style="margin-top:10px;border-color:var(--accent);color:var(--accent);" onclick="applyMapping('${src.id}')">✓ Confirm & import data</button>
-      </div>
-
-      <!-- Editable table -->
-      <div class="data-table-wrap" style="margin-top:12px;">
-        <table class="data-table" id="table_${src.id}">
-          <thead><tr>
-            ${FIELD_LABELS.map(l => `<th>${l}</th>`).join('')}
-            <th></th>
-          </tr></thead>
-          <tbody id="tbody_${src.id}"></tbody>
-        </table>
-      </div>
-      <div class="table-actions">
-        <button class="tbl-btn" onclick="addRow('${src.id}')">+ Add row</button>
-        <button class="tbl-btn" onclick="clearRows('${src.id}')">Clear</button>
-      </div>
-    </div>`;
-
-  renderRows(src);
-}
-
-// ─── Rows ──────────────────────────────────────────────────────────────────────
-function renderRows(src) {
-  const tbody = document.getElementById('tbody_' + src.id);
-  if (!tbody) return;
-  tbody.innerHTML = src.rows.map((row, i) => `
-    <tr>
-      ${FIELDS.map((f,fi) => `<td><input class="${f==='channel'?'channel-name':''}" value="${esc(String(row[f]??''))}" oninput="updateRow('${src.id}',${i},'${f}',this.value)" placeholder="${FIELD_LABELS[fi]}"/></td>`).join('')}
-      <td><button class="del-row" onclick="delRow('${src.id}',${i})">×</button></td>
-    </tr>`).join('');
-}
-
-function updateRow(srcId, i, field, val) {
-  const src = sources.find(s => s.id === srcId);
-  if (!src || !src.rows[i]) return;
-  src.rows[i][field] = field === 'channel' ? val : (parseFloat(val) || 0);
-  recalc();
-}
-
-function addRow(srcId) {
-  const src = sources.find(s => s.id === srcId);
-  if (!src) return;
-  src.rows.push({channel:'',spend:0,impressions:0,clicks:0,conversions:0,revenue:0});
-  renderRows(src);
-  recalc();
-}
-
-function delRow(srcId, i) {
-  const src = sources.find(s => s.id === srcId);
-  if (!src) return;
-  src.rows.splice(i, 1);
-  renderRows(src);
-  recalc();
-}
-
-function clearRows(srcId) {
-  const src = sources.find(s => s.id === srcId);
-  if (!src) return;
-  src.rows = [];
-  renderRows(src);
-  recalc();
-}
-
-// ─── CSV Upload ───────────────────────────────────────────────────────────────
-function onDrag(e, id) { e.preventDefault(); document.getElementById('zone_'+id)?.classList.add('drag'); }
-function offDrag(id) { document.getElementById('zone_'+id)?.classList.remove('drag'); }
-function onDrop(e, id) { e.preventDefault(); offDrag(id); const f = e.dataTransfer.files[0]; if (f) readCSV(f, id); }
-function onFile(e, id) { const f = e.target.files[0]; if (f) readCSV(f, id); }
-
-function readCSV(file, srcId) {
-  const reader = new FileReader();
-  reader.onload = e => {
-    const text = e.target.result;
-    const delim = text.indexOf('\t') > text.indexOf(',') && text.indexOf('\t') !== -1 ? '\t' : ',';
-    const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
-    if (lines.length < 2) return alert('CSV must have a header row and at least one data row.');
-
-    const headers = lines[0].split(delim).map(h => h.replace(/^"|"$/g,'').trim().toLowerCase());
-    const rawRows = lines.slice(1).map(l =>
-      l.split(delim).map(c => c.replace(/^"|"$/g,'').replace(/,/g,'').trim())
-    );
-
-    const src = sources.find(s => s.id === srcId);
-    if (!src) return;
-    src._csvHeaders = headers;
-    src._csvRaw = rawRows;
-
-    // Update upload zone
-    const zone = document.getElementById('zone_' + srcId);
-    if (zone) { zone.classList.add('upload-success'); }
-    const zt = document.getElementById('zt_' + srcId);
-    if (zt) zt.textContent = '✓ ' + file.name + ' (' + rawRows.length + ' rows)';
-    const zs = document.getElementById('zs_' + srcId);
-    const detected = Object.values(autoMap(headers)).filter(v => v !== null).length;
-    if (zs) zs.textContent = headers.length + ' columns found · ' + detected + '/' + FIELDS.length + ' fields auto-mapped';
-
-    // Auto-map — always show mapper so user can confirm or fix detections
-    const mapping = autoMap(headers);
-    src._mapping = mapping;
-    showMapper(srcId, headers, mapping);
+    const unresolved=REQ.filter(f=>mapping[f]===null);
+    if(unresolved.length>0) showMapper();
+    else applyMapping();
   };
   reader.readAsText(file);
 }
 
-const ALIASES = {
-  channel: [
-    'channel','source','platform','campaign name','campaign','ad group name','ad group',
-    'medium','ad channel','ad source','network','placement','publisher','audience name',
-    'session source','ad name','line item','ad set name','ad set'
-  ],
-  spend: [
-    'spend','cost','amount spent','budget','ad spend','total spend','total cost',
-    'investment','expenditure','charges','billed','media cost','gross spend',
-    'amount','total amount','net spend','media spend'
-  ],
-  impressions: [
-    'impressions','impr','impression','views','reach','exposure','served impressions',
-    'total impressions','ad impressions','gross impressions'
-  ],
-  clicks: [
-    'clicks','click','link clicks','total clicks','outbound clicks','tap','taps',
-    'ad clicks','website clicks','ctr clicks','sessions'
-  ],
-  conversions: [
-    'conversions','conv','purchases','orders','sales','transactions','leads',
-    'results','actions','goals','goal completions','events','installs',
-    'total conversions','website purchases','purchase events','new contacts'
-  ],
-  revenue: [
-    'revenue','sales revenue','total revenue','value','conversion value',
-    'purchase value','roas value','income','purchase conversion value',
-    'conv. value','total value','revenue (usd)','gross revenue','net revenue',
-    'total revenue (usd)','attributed revenue','reported revenue'
-  ],
-};
+function parseL(line,delim){
+  const r=[]; let cur='',inQ=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(c==='"'){inQ=!inQ;}
+    else if(c===delim&&!inQ){r.push(cur.trim());cur='';}
+    else{cur+=c;}
+  }
+  r.push(cur.trim()); return r;
+}
 
-function autoMap(headers) {
-  const mapping = {};
-  FIELDS.forEach(f => {
-    const found = headers.findIndex(h => {
-      const hn = h.trim().toLowerCase().replace(/[()[\]_-]/g,' ').replace(/\s+/g,' ');
-      return ALIASES[f].some(a => {
-        const an = a.toLowerCase();
-        return hn === an || hn.startsWith(an + ' ') || hn.endsWith(' ' + an) || hn.includes(' ' + an + ' ');
+function cleanN(s){
+  if(s===null||s===undefined||s==='')return 0;
+  return parseFloat(String(s).replace(/[$,\s%]/g,''))||0;
+}
+
+// ── Auto-map ──────────────────────────────────────────────────────────────────
+function autoMap(headers){
+  const map={};
+  [...REQ,...OPT].forEach(f=>{
+    const found=headers.findIndex(h=>{
+      const hn=h.trim().toLowerCase().replace(/[()[\]_\-]/g,' ').replace(/\s+/g,' ');
+      return ALIASES[f]?.some(a=>{
+        const an=a.toLowerCase();
+        return hn===an||hn.startsWith(an+' ')||hn.endsWith(' '+an)||hn.includes(' '+an+' ');
       });
     });
-    mapping[f] = found >= 0 ? found : null;
+    map[f]=found>=0?found:null;
   });
-  return mapping;
+  return map;
 }
 
-function showMapper(srcId, headers, mapping) {
-  const mapper = document.getElementById('mapper_' + srcId);
-  const grid = document.getElementById('mapgrid_' + srcId);
-  if (!mapper || !grid) return;
-  mapper.classList.add('visible');
-
-  grid.innerHTML = FIELDS.map(f => {
-    const detected = mapping[f] !== null;
-    const dot = detected
-      ? '<span style="color:#00e5a0;font-size:10px;margin-left:4px;" title="Auto-detected">✓</span>'
-      : '<span style="color:#ff6b35;font-size:10px;margin-left:4px;" title="Not detected — please map manually">?</span>';
-    const opts = ['— skip —', ...headers].map((h,i) =>
-      `<option value="${i-1}" ${mapping[f]===i-1?'selected':''}>${h}</option>`).join('');
-    return `<div class="map-item">
-      <label>${FIELD_LABELS[FIELDS.indexOf(f)]}${dot}</label>
-      <select id="map_${srcId}_${f}" style="border-color:${detected?'rgba(0,229,160,0.3)':'rgba(255,107,53,0.4)'}">
-        ${opts}
-      </select>
-    </div>`;
-  }).join('');
-}
-
-function applyMapping(srcId) {
-  const src = sources.find(s => s.id === srcId);
-  if (!src || !src._csvRaw) return;
-
-  const mapping = {};
-  FIELDS.forEach(f => {
-    const el = document.getElementById('map_' + srcId + '_' + f);
-    mapping[f] = el ? parseInt(el.value) : (src._mapping?.[f] ?? null);
-  });
-
-  src.rows = src._csvRaw.map(cols => {
-    const row = {};
-    FIELDS.forEach(f => {
-      const idx = mapping[f];
-      const val = idx !== null && idx >= 0 ? cols[idx] : '';
-      row[f] = f === 'channel' ? (val || 'Unknown') : (parseFloat(val) || 0);
+// Try to derive conversions from clicks × conversion_rate, and revenue from ROI column
+function tryDerive(){
+  // Derive conversions: clicks × conversion_rate
+  if(mapping.conversions===null){
+    const crIdx=csvHeaders.findIndex(h=>{
+      const hn=h.trim().toLowerCase().replace(/[_\s\-]/g,' ');
+      return hn==='conversion rate'||hn==='conversionrate'||hn==='conv rate'||hn==='conversion_rate';
     });
-    return row;
-  });
-
-  const mapper = document.getElementById('mapper_' + srcId);
-  if (mapper) mapper.classList.remove('visible');
-
-  renderRows(src);
-  recalc();
-}
-
-// ─── Template ─────────────────────────────────────────────────────────────────
-function downloadTemplate() {
-  const csv = [
-    'channel,spend,impressions,clicks,conversions,revenue',
-    'Paid Search,4200,280000,8400,210,18900',
-    'Meta Ads,3100,520000,6240,93,7440',
-    'Email,800,95000,9500,285,22800',
-    'TikTok Ads,2200,890000,5340,53,3710',
-  ].join('\n');
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = 'campaigniq-template.csv';
-  a.click();
-}
-
-// ─── Metrics ──────────────────────────────────────────────────────────────────
-function recalc() {
-  const all = getAllRows();
-  const spend = all.reduce((s,r) => s + r.spend, 0);
-  const rev   = all.reduce((s,r) => s + r.revenue, 0);
-  const roas  = spend > 0 ? (rev/spend) : 0;
-
-  document.getElementById('m-spend').textContent = spend ? '$' + spend.toLocaleString() : '—';
-  document.getElementById('m-rev').textContent   = rev   ? '$' + rev.toLocaleString()   : '—';
-
-  const roasEl = document.getElementById('m-roas');
-  roasEl.textContent = roas ? roas.toFixed(1) + 'x' : '—';
-  roasEl.className = 'metric-val ' + (roas >= 3 ? 'good' : roas > 0 ? 'warn' : 'neutral');
-
-  // Source pills
-  const pillsEl = document.getElementById('source-pills');
-  if (pillsEl) {
-    pillsEl.innerHTML = sources.map(s =>
-      `<span class="merge-pill"><span class="dot" style="background:${s.color}"></span>${esc(s.name)} (${s.rows.filter(r=>r.spend>0).length})</span>`
-    ).join('');
+    if(crIdx>=0&&mapping.clicks!==null){
+      mapping._crIdx=crIdx; mapping._deriveConv=true;
+      mapping.conversions='__derived__';
+    }
+  }
+  // Derive revenue: ROI column (dollar value)
+  if(mapping.revenue===null){
+    const roiIdx=csvHeaders.findIndex(h=>h.trim().toLowerCase()==='roi');
+    if(roiIdx>=0){
+      mapping._roiIdx=roiIdx; mapping._deriveRev=true;
+      mapping.revenue='__derived__';
+    }
+  }
+  // Derive spend from acquisition_cost if spend still null
+  if(mapping.spend===null){
+    const acIdx=csvHeaders.findIndex(h=>{
+      const hn=h.trim().toLowerCase().replace(/[_\s]/g,' ');
+      return hn==='acquisition cost'||hn==='acquisitioncost';
+    });
+    if(acIdx>=0) mapping.spend=acIdx;
   }
 }
 
-function getAllRows() {
-  return sources.flatMap(src =>
-    src.rows.filter(r => r.channel && r.spend > 0).map(r => ({...r, _source: src.name, _color: src.color}))
-  );
+// ── Mapper UI ─────────────────────────────────────────────────────────────────
+function showMapper(){
+  const grid=document.getElementById('mgrid');
+  const allF=[...REQ,...OPT], allL=[...RLBL,...OLBL];
+  grid.innerHTML=allF.map((f,fi)=>{
+    const idx=mapping[f]==='__derived__'?-2:mapping[f];
+    const detected=idx!==null&&idx!==undefined&&idx>=0;
+    const isDerived=mapping[f]==='__derived__';
+    const dot=isDerived
+      ?`<span style="color:var(--accent2);font-size:10px;margin-left:4px;" title="Will be calculated">✦</span>`
+      :detected
+        ?`<span style="color:var(--accent);font-size:10px;margin-left:4px;">✓</span>`
+        :REQ.includes(f)?`<span style="color:var(--warn);font-size:10px;margin-left:4px;">?</span>`:'';
+    const opts=['— skip —',...csvHeaders].map((h,i)=>
+      `<option value="${i-1}" ${idx===i-1?'selected':''}>${h}</option>`).join('');
+    const borderCol=isDerived?'rgba(124,109,250,0.4)':detected?'rgba(0,229,160,0.3)':'rgba(255,107,53,0.3)';
+    return `<div class="map-item">
+      <label>${allL[fi]}${dot}</label>
+      <select id="map_${f}" style="border-color:${borderCol}" ${isDerived?'disabled':''}>
+        ${isDerived?`<option>Calculated (${f==='conversions'?'clicks × conv. rate':'ROI column'})</option>`:opts}
+      </select>
+    </div>`;
+  }).join('');
+  document.getElementById('mapper').classList.add('visible');
 }
 
-// ─── Analysis ─────────────────────────────────────────────────────────────────
-async function runAnalysis() {
-  const data = getAllRows().map(r => ({
-    ...r,
-    roas: r.spend > 0 ? (r.revenue/r.spend).toFixed(2) : 0,
-    cpc:  r.clicks > 0 ? (r.spend/r.clicks).toFixed(2) : 0,
-    cvr:  r.clicks > 0 ? ((r.conversions/r.clicks)*100).toFixed(2) : 0,
-    cpa:  r.conversions > 0 ? (r.spend/r.conversions).toFixed(2) : 0,
-    ctr:  r.impressions > 0 ? ((r.clicks/r.impressions)*100).toFixed(2) : 0,
-  }));
+// ── Apply mapping + build rows ─────────────────────────────────────────────────
+function applyMapping(){
+  const allF=[...REQ,...OPT];
+  allF.forEach(f=>{
+    const el=document.getElementById('map_'+f);
+    if(el&&!el.disabled) mapping[f]=parseInt(el.value);
+  });
+  document.getElementById('mapper').classList.remove('visible');
 
-  if (!data.length) return alert('Add at least one channel with spend data before analyzing.');
+  rows=csvRaw.map(cols=>{
+    const get=idx=>(idx>=0&&idx<cols.length)?cols[idx]:'';
 
-  const brand    = document.getElementById('ctx-brand').value;
-  const goal     = document.getElementById('ctx-goal').value;
-  const audience = document.getElementById('ctx-audience').value;
-  const extra    = document.getElementById('ctx-extra').value;
+    const channel=(get(mapping.channel)||'Unknown').replace(/^"|"$/g,'').trim();
+    const spend=cleanN(get(mapping.spend));
+    const impressions=cleanN(get(mapping.impressions));
+    const clicks=cleanN(get(mapping.clicks));
 
-  const totalSpend = data.reduce((s,r) => s+r.spend, 0);
-  const totalRev   = data.reduce((s,r) => s+r.revenue, 0);
-  const sourceList = [...new Set(data.map(r => r._source))];
+    let conversions;
+    if(mapping._deriveConv&&mapping._crIdx!==undefined){
+      const cr=cleanN(get(mapping._crIdx));
+      conversions=Math.round(clicks*(cr>1?cr/100:cr));
+    } else {
+      conversions=cleanN(get(mapping.conversions));
+    }
 
-  const prompt = `You are a senior performance marketing strategist. Analyze this multi-source campaign data and return ONLY a raw JSON object — no prose, no markdown, no backticks.
+    let revenue;
+    if(mapping._deriveRev&&mapping._roiIdx!==undefined){
+      revenue=cleanN(get(mapping._roiIdx));
+    } else {
+      revenue=cleanN(get(mapping.revenue));
+    }
+
+    const row={channel,spend,impressions,clicks,conversions,revenue};
+    if(mapping.company>=0)     row.company=get(mapping.company).trim();
+    if(mapping.campaign_type>=0) row.campaign_type=get(mapping.campaign_type).trim();
+    if(mapping.target_audience>=0) row.target_audience=get(mapping.target_audience).trim();
+    if(mapping.location>=0)    row.location=get(mapping.location).trim();
+    if(mapping.segment>=0)     row.segment=get(mapping.segment).trim();
+    if(mapping.engagement>=0)  row.engagement=cleanN(get(mapping.engagement));
+    return row;
+  }).filter(r=>r.channel&&(r.spend>0||r.clicks>0));
+
+  document.getElementById('us').textContent=`${rows.length} rows imported · ready to analyze`;
+  renderPreview();
+  recalc();
+  const btn=document.getElementById('run-btn');
+  btn.disabled=false; btn.textContent='⚡ Analyze with AI';
+}
+
+// ── Preview ───────────────────────────────────────────────────────────────────
+function renderPreview(){
+  document.getElementById('pthead').innerHTML=`<tr>
+    <th>Channel</th><th>Company</th><th>Type</th><th>Audience</th>
+    <th style="text-align:right">Spend</th><th style="text-align:right">Impr.</th>
+    <th style="text-align:right">Clicks</th><th style="text-align:right">Conv.</th>
+    <th style="text-align:right">Revenue</th><th style="text-align:right">ROAS</th>
+  </tr>`;
+  document.getElementById('ptbody').innerHTML=rows.map(r=>{
+    const roas=r.spend>0?(r.revenue/r.spend).toFixed(1):'—';
+    const roasCls=parseFloat(roas)>=10?'tnum':'twarn';
+    return `<tr>
+      <td class="tch">${e(r.channel)}</td>
+      <td>${e(r.company||'—')}</td>
+      <td>${e(r.campaign_type||'—')}</td>
+      <td>${e(r.target_audience||'—')}</td>
+      <td class="tnum">$${r.spend.toLocaleString()}</td>
+      <td class="tnum">${r.impressions.toLocaleString()}</td>
+      <td class="tnum">${r.clicks.toLocaleString()}</td>
+      <td class="tnum">${r.conversions.toLocaleString()}</td>
+      <td class="tnum">$${r.revenue.toLocaleString()}</td>
+      <td class="${roasCls}">${roas}x</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('preview-section').style.display='block';
+}
+
+function recalc(){
+  const spend=rows.reduce((s,r)=>s+r.spend,0);
+  const rev=rows.reduce((s,r)=>s+r.revenue,0);
+  const roas=spend>0?(rev/spend).toFixed(1):'—';
+  document.getElementById('m-rows').textContent=rows.length;
+  document.getElementById('m-spend').textContent=spend?'$'+spend.toLocaleString():'—';
+  document.getElementById('m-rev').textContent=rev?'$'+rev.toLocaleString():'—';
+  const re=document.getElementById('m-roas');
+  re.textContent=roas+'x';
+  re.className='metric-val '+(parseFloat(roas)>=3?'good':'warnc');
+}
+
+function clearAll(){
+  rows=[];csvHeaders=[];csvRaw=[];mapping={};
+  ['upload-success'].forEach(c=>document.getElementById('uz').classList.remove(c));
+  document.getElementById('ui').textContent='↑';
+  document.getElementById('ut').textContent='Drop CSV here or click to upload';
+  document.getElementById('us').textContent='Any column naming · auto-detects fields including derived conversions & revenue';
+  document.getElementById('preview-section').style.display='none';
+  document.getElementById('mapper').classList.remove('visible');
+  const btn=document.getElementById('run-btn');
+  btn.disabled=true; btn.textContent='Upload data first';
+  document.getElementById('output-body').innerHTML=`<div class="output-empty"><div class="icon">◈</div><p>Upload your CSV above, then hit Analyze.</p></div>`;
+}
+
+// ── Analysis ──────────────────────────────────────────────────────────────────
+async function runAnalysis(){
+  if(!rows.length)return;
+
+  const brand=document.getElementById('ctx-brand').value;
+  const goal=document.getElementById('ctx-goal').value;
+  const audience=document.getElementById('ctx-audience').value;
+  const extra=document.getElementById('ctx-extra').value;
+
+  const totalSpend=rows.reduce((s,r)=>s+r.spend,0);
+  const totalRev=rows.reduce((s,r)=>s+r.revenue,0);
+  const totalConv=rows.reduce((s,r)=>s+r.conversions,0);
+  const totalClicks=rows.reduce((s,r)=>s+r.clicks,0);
+
+  // Aggregate by channel
+  const byChannel={};
+  rows.forEach(r=>{
+    if(!byChannel[r.channel]) byChannel[r.channel]={spend:0,impressions:0,clicks:0,conversions:0,revenue:0,count:0};
+    const c=byChannel[r.channel];
+    c.spend+=r.spend;c.impressions+=r.impressions;c.clicks+=r.clicks;
+    c.conversions+=r.conversions;c.revenue+=r.revenue;c.count++;
+  });
+
+  // Aggregate by segment
+  const bySegment={};
+  const hasSegments=rows.some(r=>r.segment);
+  if(hasSegments){
+    rows.forEach(r=>{
+      if(!r.segment)return;
+      if(!bySegment[r.segment]) bySegment[r.segment]={spend:0,revenue:0,conversions:0,count:0};
+      bySegment[r.segment].spend+=r.spend;bySegment[r.segment].revenue+=r.revenue;
+      bySegment[r.segment].conversions+=r.conversions;bySegment[r.segment].count++;
+    });
+  }
+
+  const chLines=Object.entries(byChannel).map(([ch,c])=>
+    `- ${ch} (${c.count} campaigns): Spend $${c.spend.toLocaleString()}, Revenue $${c.revenue.toLocaleString()}, ROAS ${c.spend>0?(c.revenue/c.spend).toFixed(1):0}x, Clicks ${c.clicks.toLocaleString()}, Conversions ${c.conversions}, CTR ${c.impressions>0?((c.clicks/c.impressions)*100).toFixed(2):0}%, CVR ${c.clicks>0?((c.conversions/c.clicks)*100).toFixed(2):0}%, CPA $${c.conversions>0?(c.spend/c.conversions).toFixed(0):'-'}`
+  ).join('\n');
+
+  const segLines=Object.entries(bySegment).map(([seg,s])=>
+    `- ${seg}: Spend $${s.spend.toLocaleString()}, Revenue $${s.revenue.toLocaleString()}, ROAS ${s.spend>0?(s.revenue/s.spend).toFixed(1):0}x, Conversions ${s.conversions}, Campaigns ${s.count}`
+  ).join('\n');
+
+  const extras=[];
+  if(rows.some(r=>r.company)){const cs=[...new Set(rows.map(r=>r.company).filter(Boolean))];extras.push(`Companies: ${cs.join(', ')}`);}
+  if(rows.some(r=>r.target_audience)){const ta=[...new Set(rows.map(r=>r.target_audience).filter(Boolean))];extras.push(`Audiences tested: ${ta.join(', ')}`);}
+  if(rows.some(r=>r.location)){const locs=[...new Set(rows.map(r=>r.location).filter(Boolean))];extras.push(`Locations: ${locs.join(', ')}`);}
+  if(rows.some(r=>r.engagement)){const avgEng=(rows.reduce((s,r)=>s+r.engagement,0)/rows.length).toFixed(1);extras.push(`Avg engagement score: ${avgEng}/10`);}
+
+  const prompt=`You are a senior performance marketing strategist. Analyze this campaign data and return ONLY a raw JSON object — no prose, no markdown, no backticks.
 
 CAMPAIGN:
 Brand: ${brand}
 Goal: ${goal}
 Audience: ${audience}
-Context: ${extra || 'None'}
-Data sources: ${sourceList.join(', ')}
-Total Spend: $${totalSpend.toLocaleString()} | Total Revenue: $${totalRev.toLocaleString()} | Blended ROAS: ${(totalRev/totalSpend).toFixed(1)}x
+Context: ${extra||'None'}
+${extras.join('\n')}
+Total: Spend $${totalSpend.toLocaleString()}, Revenue $${totalRev.toLocaleString()}, Blended ROAS ${(totalRev/totalSpend).toFixed(1)}x, Conversions ${totalConv.toLocaleString()}, Clicks ${totalClicks.toLocaleString()}, Campaigns ${rows.length}
 
-Channels (with source):
-${data.map(r => `- [${r._source}] ${r.channel}: Spend $${r.spend}, Revenue $${r.revenue}, ROAS ${r.roas}x, CTR ${r.ctr}%, CVR ${r.cvr}%, CPA $${r.cpa}, CPC $${r.cpc}`).join('\n')}
+Channel breakdown (aggregated):
+${chLines}
+${segLines?'\nCustomer segment breakdown:\n'+segLines:''}
 
 Return ONLY this JSON:
 {
-  "headline_insight": "One sharp sentence — the single most important finding",
-  "top_performer": { "channel": "name", "source": "source name", "why": "2 sentences explaining why it's winning" },
-  "biggest_waste": { "channel": "name", "source": "source name", "why": "2 sentences on why it underperforms and what to fix" },
+  "headline_insight": "One sharp sentence — the single most important finding from this data",
+  "top_performer": {"channel":"name","why":"2 sentences explaining what's driving its performance"},
+  "biggest_waste": {"channel":"name","why":"2 sentences on why it underperforms and what to fix"},
   "budget_move": "2-3 sentences: specific reallocation with amounts or percentages",
-  "quick_win": "2 sentences: one action executable this week",
-  "channel_scores": [{ "channel": "name", "source": "source", "score": 0-100, "recommendation": "Scale/Hold/Cut/Test" }],
-  "ad_copy": { "headline": "Punchy headline for top channel (under 10 words)", "body": "2-3 sentences of ad copy for gaming/tech audience", "cta": "Action-driven CTA" }
+  "quick_win": "2 sentences: one high-impact action to execute this week",
+  "channel_scores": [{"channel":"name","score":0-100,"recommendation":"Scale/Hold/Cut/Test"}],
+  "segment_insight": "${hasSegments?'2 sentences on best-performing customer segment and what it means for targeting':'N/A'}",
+  "ad_copy": {"headline":"Under 10 words, punchy, data-backed","body":"2-3 sentences for the top channel, written for the specific audience","cta":"Action CTA"}
 }`;
 
-  const btn = document.getElementById('run-btn');
-  btn.disabled = true; btn.classList.add('loading');
-  btn.innerHTML = '<span class="spinner"></span>Analyzing with Claude...';
+  const btn=document.getElementById('run-btn');
+  btn.disabled=true;btn.classList.add('loading');
+  btn.innerHTML=`<span class="spinner"></span>Analyzing ${Object.keys(byChannel).length} channels...`;
 
-  const out = document.getElementById('output-body');
-  out.innerHTML = `<div style="display:flex;align-items:center;gap:10px;color:var(--text2);font-family:var(--mono);font-size:12px;padding:8px 0;"><span class="spinner"></span>Claude is analyzing ${data.length} channels across ${sourceList.length} source${sourceList.length>1?'s':''}<span class="cursor"></span></div>`;
+  const out=document.getElementById('output-body');
+  out.innerHTML=`<div style="display:flex;align-items:center;gap:10px;color:var(--text2);font-family:var(--mono);font-size:12px;padding:8px 0;"><span class="spinner"></span>Claude is analyzing ${rows.length} campaigns<span class="cursor"></span></div>`;
 
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role: 'user', content: prompt }] })
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:prompt}]})
     });
-    const apiData = await res.json();
-    const raw = apiData?.content?.[0]?.text || '';
-    let parsed;
-    try { parsed = JSON.parse(raw.replace(/```json|```/g,'').trim()); }
-    catch(e) { throw new Error('Could not parse AI response. Try again.'); }
-    renderResults(parsed);
-  } catch(err) {
-    out.innerHTML = `<div style="color:var(--warn);font-family:var(--mono);font-size:12px;padding:12px 0;">⚠ ${err.message}</div>`;
-  } finally {
-    btn.disabled = false; btn.classList.remove('loading');
-    btn.innerHTML = '⚡ Re-Analyze';
+    const apiData=await res.json();
+    const raw=apiData?.content?.[0]?.text||'';
+    let d;
+    try{d=JSON.parse(raw.replace(/```json|```/g,'').trim());}
+    catch(err){throw new Error('Could not parse AI response. Try again.');}
+    renderResults(d,byChannel,bySegment,hasSegments);
+  }catch(err){
+    out.innerHTML=`<div style="color:var(--warn);font-family:var(--mono);font-size:12px;padding:12px 0;">⚠ ${err.message}</div>`;
+  }finally{
+    btn.disabled=false;btn.classList.remove('loading');btn.innerHTML='⚡ Re-Analyze';
   }
 }
 
-// ─── Render results ───────────────────────────────────────────────────────────
-function scoreColor(s) { return s>=70 ? '#00e5a0' : s>=40 ? '#7c6dfa' : '#ff6b35'; }
+// ── Render ─────────────────────────────────────────────────────────────────────
+function sc(s){return s>=70?'#00e5a0':s>=40?'#7c6dfa':'#ff6b35';}
 
-function renderResults(d) {
-  const body = document.getElementById('output-body');
-
-  const scoresHtml = (d.channel_scores||[]).map(ch => {
-    const pct = Math.min(100, Math.max(0, ch.score));
-    const col = scoreColor(pct);
-    const srcColor = (sources.find(s => s.name === ch.source)||{}).color || '#4a4a52';
-    return `<div class="channel-row">
-      <div class="ch-name" title="${esc(ch.channel)}">${esc(ch.channel)}</div>
-      <div class="ch-source" style="color:${srcColor}" title="${esc(ch.source)}">${esc(ch.source)}</div>
+function renderResults(d,byChannel,bySegment,hasSegments){
+  const scoresHtml=(d.channel_scores||[]).map(ch=>{
+    const pct=Math.min(100,Math.max(0,ch.score));
+    const col=sc(pct);
+    return `<div class="ch-row">
+      <div class="ch-name" title="${e(ch.channel)}">${e(ch.channel)}</div>
       <div class="ch-bar-bg"><div class="ch-bar-fill" style="width:0%;background:${col};" data-w="${pct}"></div></div>
       <div class="ch-score" style="color:${col};">${pct}</div>
-      <div class="ch-rec" style="color:${col};">${esc(ch.recommendation)}</div>
+      <div class="ch-rec" style="color:${col};">${e(ch.recommendation)}</div>
     </div>`;
   }).join('');
 
-  body.innerHTML = `
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:13px 17px;margin-bottom:18px;border-left:3px solid var(--accent);">
+  const segHtml=hasSegments&&Object.keys(bySegment).length>0
+    ?`<div style="margin-top:18px;">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Customer segment performance</div>
+        <div class="seg-grid">
+          ${Object.entries(bySegment).sort((a,b)=>b[1].revenue-a[1].revenue).map(([seg,s])=>`
+            <div class="seg-item">
+              <div class="seg-name">${e(seg)}</div>
+              <div class="seg-stats">Revenue $${s.revenue.toLocaleString()} · ROAS ${s.spend>0?(s.revenue/s.spend).toFixed(1):'-'}x · ${s.conversions} conv · ${s.count} campaigns</div>
+            </div>`).join('')}
+        </div>
+        ${d.segment_insight&&d.segment_insight!=='N/A'?`<div style="margin-top:10px;font-size:13px;color:var(--text2);line-height:1.65;padding:10px 14px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);">${e(d.segment_insight)}</div>`:''}
+      </div>`:''
+
+  document.getElementById('output-body').innerHTML=`
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:13px 17px;margin-bottom:16px;border-left:3px solid var(--accent);">
       <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">Key finding</div>
-      <div style="font-family:var(--head);font-size:15px;font-weight:600;color:var(--text);line-height:1.5;">${esc(d.headline_insight)}</div>
+      <div style="font-family:var(--head);font-size:15px;font-weight:600;color:var(--text);line-height:1.5;">${e(d.headline_insight)}</div>
     </div>
     <div class="result-grid">
       <div class="result-card green">
         <div class="rc-label">🏆 Top Performer</div>
-        <div class="rc-content"><strong>${esc(d.top_performer?.channel)}</strong> <span style="color:var(--text3);font-size:11px;">(${esc(d.top_performer?.source)})</span><br>${esc(d.top_performer?.why)}</div>
+        <div class="rc-content"><strong>${e(d.top_performer?.channel)}</strong><br>${e(d.top_performer?.why)}</div>
       </div>
       <div class="result-card orange">
         <div class="rc-label">⚠ Biggest Waste</div>
-        <div class="rc-content"><span class="warn-text">${esc(d.biggest_waste?.channel)}</span> <span style="color:var(--text3);font-size:11px;">(${esc(d.biggest_waste?.source)})</span><br>${esc(d.biggest_waste?.why)}</div>
+        <div class="rc-content"><span class="wt">${e(d.biggest_waste?.channel)}</span><br>${e(d.biggest_waste?.why)}</div>
       </div>
       <div class="result-card purple">
         <div class="rc-label">💡 Quick Win This Week</div>
-        <div class="rc-content">${esc(d.quick_win)}</div>
+        <div class="rc-content">${e(d.quick_win)}</div>
       </div>
     </div>
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:15px 17px;margin-bottom:14px;">
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 17px;margin-bottom:14px;">
       <div class="rc-label" style="margin-bottom:7px;">📊 Budget Reallocation</div>
-      <div style="font-size:13px;color:var(--text);line-height:1.7;">${esc(d.budget_move)}</div>
+      <div style="font-size:13px;color:var(--text);line-height:1.7;">${e(d.budget_move)}</div>
     </div>
     <div>
-      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:9px;">Channel scores by source</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Channel performance scores</div>
       ${scoresHtml}
     </div>
+    ${segHtml}
     <div class="copy-block">
-      <div class="copy-block-label">✍ AI-Generated Ad Copy — ${esc(d.top_performer?.channel)}</div>
+      <div class="copy-label">✍ AI-Generated Ad Copy — ${e(d.top_performer?.channel)}</div>
       <button class="copy-btn" onclick="copyCopy()">Copy</button>
-      <div style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500;margin-bottom:6px;" id="copy-hl">${esc(d.ad_copy?.headline)}</div>
-      <p style="font-size:13px;color:var(--text);line-height:1.75;" id="copy-body">${esc(d.ad_copy?.body)}</p>
-      <div style="margin-top:9px;display:inline-block;background:var(--accent);color:#000;padding:5px 14px;border-radius:5px;font-family:var(--mono);font-size:11px;font-weight:500;">${esc(d.ad_copy?.cta)}</div>
+      <div id="copy-hl" style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500;margin-bottom:6px;">${e(d.ad_copy?.headline)}</div>
+      <p id="copy-body" style="font-size:13px;color:var(--text);line-height:1.75;">${e(d.ad_copy?.body)}</p>
+      <div style="margin-top:9px;display:inline-block;background:var(--accent);color:#000;padding:5px 14px;border-radius:5px;font-family:var(--mono);font-size:11px;font-weight:500;">${e(d.ad_copy?.cta)}</div>
     </div>`;
 
-  // Animate bars
-  setTimeout(() => document.querySelectorAll('.ch-bar-fill').forEach(b => {
-    b.style.width = b.dataset.w + '%';
-  }), 80);
+  setTimeout(()=>document.querySelectorAll('.ch-bar-fill').forEach(b=>{b.style.width=b.dataset.w+'%';}),80);
 }
 
-function copyCopy() {
-  const hl   = document.getElementById('copy-hl')?.textContent || '';
-  const body = document.getElementById('copy-body')?.textContent || '';
-  navigator.clipboard.writeText(hl + '\n\n' + body).then(() => {
-    const btn = document.querySelector('.copy-btn');
-    btn.textContent = 'Copied!';
-    setTimeout(() => btn.textContent = 'Copy', 2000);
+function copyCopy(){
+  const t=(document.getElementById('copy-hl')?.textContent||'')+'\n\n'+(document.getElementById('copy-body')?.textContent||'');
+  navigator.clipboard.writeText(t).then(()=>{
+    const btn=document.querySelector('.copy-btn');btn.textContent='Copied!';
+    setTimeout(()=>btn.textContent='Copy',2000);
   });
 }
 
-// ─── Utils ────────────────────────────────────────────────────────────────────
-function esc(str) {
-  if (str === null || str === undefined) return '';
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function downloadTemplate(){
+  const csv=['Channel_Used,Company,Campaign_Type,Target_Audience,Clicks,Impressions,Conversion_Rate,Acquisition_Cost,ROI,Location,Customer_Segment,Engagement_Score',
+    'Google Ads,Innovate Industries,Email,Men 18-24,506,1922,0.04,$16174,$629000,Chicago,Health & Wellness,6',
+    'Instagram,NexGen Systems,Social Media,Women 35-44,116,7523,0.12,$11566,$561000,New York,Fashionistas,7',
+    'YouTube,Alpha Innovations,Influencer,Men 25-34,584,7698,0.07,$10200,$629000,Los Angeles,Outdoor Adventurers,1',
+    'Facebook,TechCorp,Social Media,All Ages,217,1820,0.11,$12724,$561000,Miami,Health & Wellness,7',
+    'Email,DataTech Solutions,Display,Men 25-34,379,4201,0.05,$16452,$629000,Los Angeles,Tech Enthusiasts,3',
+  ].join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='campaigniq-template.csv';a.click();
 }
 
-// ─── Boot ─────────────────────────────────────────────────────────────────────
-init();
+function e(s){
+  if(s===null||s===undefined)return'';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 </script>
 </body>
 </html>
