@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampaignIQ — AI Marketing Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --surface: #111113;
+    --surface2: #18181c;
+    --border: rgba(255,255,255,0.07);
+    --border-hi: rgba(255,255,255,0.14);
+    --accent: #00e5a0;
+    --accent2: #7c6dfa;
+    --warn: #ff6b35;
+    --text: #f0efe8;
+    --text2: #8a8a8f;
+    --text3: #4a4a52;
+    --mono: 'DM Mono', monospace;
+    --head: 'Syne', sans-serif;
+    --body: 'DM Sans', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--bg); color: var(--text); font-family: var(--body); font-size: 14px; line-height: 1.6; }
+
+  /* Layout */
+  .app { min-height: 100vh; display: grid; grid-template-rows: auto 1fr; }
+  header { border-bottom: 1px solid var(--border); padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: rgba(10,10,11,0.92); backdrop-filter: blur(12px); z-index: 100; }
+  .logo { font-family: var(--head); font-weight: 800; font-size: 18px; letter-spacing: -0.03em; }
+  .logo span { color: var(--accent); }
+  .logo-sub { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.1em; margin-top: 1px; }
+  .badge { font-family: var(--mono); font-size: 10px; padding: 3px 10px; border-radius: 20px; border: 1px solid var(--accent); color: var(--accent); letter-spacing: 0.06em; }
+
+  main { display: grid; grid-template-columns: 1fr 1fr; gap: 0; max-width: 1400px; margin: 0 auto; width: 100%; padding: 32px; gap: 24px; }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .card-header { padding: 18px 22px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: baseline; gap: 10px; }
+  .card-title { font-family: var(--head); font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: var(--text); text-transform: uppercase; }
+  .card-step { font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 0.08em; }
+  .card-body { padding: 20px 22px; }
+
+  /* Input table */
+  .data-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; }
+  .data-table th { color: var(--text3); font-weight: 400; text-align: left; padding: 6px 8px 10px; letter-spacing: 0.06em; font-size: 11px; border-bottom: 1px solid var(--border); }
+  .data-table td { padding: 4px 2px; }
+  .data-table td input {
+    width: 100%; background: var(--surface2); border: 1px solid transparent; border-radius: 5px; padding: 6px 8px;
+    color: var(--text); font-family: var(--mono); font-size: 12px; outline: none; transition: border-color 0.2s;
+  }
+  .data-table td input:focus { border-color: var(--accent); }
+  .data-table td input.channel-name { color: var(--accent2); font-weight: 500; }
+
+  .add-row-btn { margin-top: 10px; background: none; border: 1px dashed var(--border-hi); color: var(--text2); padding: 7px 14px; border-radius: 6px; cursor: pointer; font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; width: 100%; transition: all 0.2s; }
+  .add-row-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Metrics bar */
+  .metrics-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  .metric-box { background: var(--surface2); border-radius: 8px; padding: 12px 14px; border: 1px solid var(--border); }
+  .metric-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; }
+  .metric-val { font-family: var(--head); font-size: 22px; font-weight: 700; margin-top: 3px; color: var(--text); }
+  .metric-val.good { color: var(--accent); }
+  .metric-val.warn { color: var(--warn); }
+
+  /* Context inputs */
+  .input-group { margin-bottom: 14px; }
+  .input-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; display: block; }
+  .input-field { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; padding: 9px 12px; color: var(--text); font-family: var(--body); font-size: 13px; outline: none; transition: border-color 0.2s; resize: vertical; }
+  .input-field:focus { border-color: var(--accent); }
+  select.input-field option { background: var(--surface2); }
+
+  /* Run button */
+  .run-btn { width: 100%; padding: 13px; background: var(--accent); color: #000; font-family: var(--head); font-size: 14px; font-weight: 700; letter-spacing: 0.04em; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; position: relative; overflow: hidden; }
+  .run-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 24px rgba(0,229,160,0.3); }
+  .run-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+  .run-btn.loading { background: var(--surface2); color: var(--accent); border: 1px solid var(--accent); }
+
+  /* Output panel */
+  .output-panel { grid-column: 1 / -1; }
+  .output-empty { text-align: center; padding: 48px 24px; }
+  .output-empty .icon { font-size: 36px; margin-bottom: 12px; opacity: 0.3; }
+  .output-empty p { color: var(--text3); font-family: var(--mono); font-size: 12px; }
+
+  /* Results */
+  .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+  .result-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; position: relative; overflow: hidden; }
+  .result-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .result-card.green::before { background: var(--accent); }
+  .result-card.purple::before { background: var(--accent2); }
+  .result-card.orange::before { background: var(--warn); }
+  .rc-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+  .rc-content { font-family: var(--body); font-size: 13px; color: var(--text); line-height: 1.65; }
+  .rc-content strong { color: var(--accent); font-weight: 500; }
+  .rc-content .warn-text { color: var(--warn); font-weight: 500; }
+
+  /* Copy block */
+  .copy-block { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-top: 16px; position: relative; }
+  .copy-block-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+  .copy-block p { font-size: 14px; color: var(--text); line-height: 1.75; font-style: italic; }
+  .copy-btn { position: absolute; top: 14px; right: 14px; background: var(--surface); border: 1px solid var(--border-hi); color: var(--text2); padding: 5px 12px; border-radius: 5px; cursor: pointer; font-family: var(--mono); font-size: 11px; transition: all 0.2s; }
+  .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* Channel scores */
+  .channel-scores { margin-top: 16px; }
+  .channel-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; padding: 10px 14px; background: var(--surface2); border-radius: 8px; border: 1px solid var(--border); }
+  .ch-name { font-family: var(--mono); font-size: 12px; color: var(--accent2); width: 110px; flex-shrink: 0; }
+  .ch-bar-bg { flex: 1; height: 5px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+  .ch-bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+  .ch-score { font-family: var(--mono); font-size: 11px; width: 36px; text-align: right; flex-shrink: 0; }
+  .ch-rec { font-size: 11px; color: var(--text3); flex: 0 0 90px; text-align: right; }
+
+  /* Streaming cursor */
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  .cursor { display: inline-block; width: 2px; height: 14px; background: var(--accent); margin-left: 2px; vertical-align: middle; animation: blink 0.8s infinite; }
+
+  /* Spinner */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--accent); border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
+
+  /* Tabs */
+  .output-tabs { display: flex; gap: 2px; margin-bottom: 16px; background: var(--surface2); padding: 4px; border-radius: 8px; width: fit-content; }
+  .otab { padding: 6px 16px; border-radius: 6px; font-family: var(--mono); font-size: 11px; cursor: pointer; color: var(--text2); letter-spacing: 0.05em; transition: all 0.2s; }
+  .otab.active { background: var(--surface); color: var(--text); }
+
+  /* Watermark */
+  .watermark { text-align: center; padding: 24px; color: var(--text3); font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; grid-column: 1/-1; }
+
+  @media (max-width: 900px) {
+    main { grid-template-columns: 1fr; padding: 16px; }
+    .output-panel { grid-column: 1; }
+    .result-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div>
+    <div class="logo">Campaign<span>IQ</span></div>
+    <div class="logo-sub">AI MARKETING ANALYTICS · POWERED BY CLAUDE</div>
+  </div>
+  <span class="badge">PORTFOLIO DEMO</span>
+</header>
+
+<main>
+  <!-- LEFT: Data Input -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-step">01 —</span>
+      <span class="card-title">Campaign Data Input</span>
+    </div>
+    <div class="card-body">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Channel</th>
+            <th>Spend ($)</th>
+            <th>Impressions</th>
+            <th>Clicks</th>
+            <th>Conversions</th>
+            <th>Revenue ($)</th>
+          </tr>
+        </thead>
+        <tbody id="data-rows">
+          <tr>
+            <td><input class="channel-name" value="Paid Search" placeholder="Channel"/></td>
+            <td><input type="number" value="4200" placeholder="0"/></td>
+            <td><input type="number" value="280000" placeholder="0"/></td>
+            <td><input type="number" value="8400" placeholder="0"/></td>
+            <td><input type="number" value="210" placeholder="0"/></td>
+            <td><input type="number" value="18900" placeholder="0"/></td>
+          </tr>
+          <tr>
+            <td><input class="channel-name" value="Meta Ads" placeholder="Channel"/></td>
+            <td><input type="number" value="3100" placeholder="0"/></td>
+            <td><input type="number" value="520000" placeholder="0"/></td>
+            <td><input type="number" value="6240" placeholder="0"/></td>
+            <td><input type="number" value="93" placeholder="0"/></td>
+            <td><input type="number" value="7440" placeholder="0"/></td>
+          </tr>
+          <tr>
+            <td><input class="channel-name" value="Email" placeholder="Channel"/></td>
+            <td><input type="number" value="800" placeholder="0"/></td>
+            <td><input type="number" value="95000" placeholder="0"/></td>
+            <td><input type="number" value="9500" placeholder="0"/></td>
+            <td><input type="number" value="285" placeholder="0"/></td>
+            <td><input type="number" value="22800" placeholder="0"/></td>
+          </tr>
+          <tr>
+            <td><input class="channel-name" value="TikTok Ads" placeholder="Channel"/></td>
+            <td><input type="number" value="2200" placeholder="0"/></td>
+            <td><input type="number" value="890000" placeholder="0"/></td>
+            <td><input type="number" value="5340" placeholder="0"/></td>
+            <td><input type="number" value="53" placeholder="0"/></td>
+            <td><input type="number" value="3710" placeholder="0"/></td>
+          </tr>
+          <tr>
+            <td><input class="channel-name" value="YouTube" placeholder="Channel"/></td>
+            <td><input type="number" value="1800" placeholder="0"/></td>
+            <td><input type="number" value="340000" placeholder="0"/></td>
+            <td><input type="number" value="2380" placeholder="0"/></td>
+            <td><input type="number" value="71" placeholder="0"/></td>
+            <td><input type="number" value="6390" placeholder="0"/></td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="add-row-btn" onclick="addRow()">+ Add channel</button>
+
+      <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);">
+        <div class="metrics-row" id="live-metrics">
+          <div class="metric-box"><div class="metric-label">Total Spend</div><div class="metric-val" id="m-spend">$12,100</div></div>
+          <div class="metric-box"><div class="metric-label">Total Revenue</div><div class="metric-val good" id="m-rev">$59,240</div></div>
+          <div class="metric-box"><div class="metric-label">Blended ROAS</div><div class="metric-val good" id="m-roas">4.9x</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Context -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-step">02 —</span>
+      <span class="card-title">Campaign Context</span>
+    </div>
+    <div class="card-body">
+      <div class="input-group">
+        <label class="input-label">Brand / Product</label>
+        <input class="input-field" id="ctx-brand" value="CORSAIR K100 RGB Keyboard" placeholder="e.g. CORSAIR K100 RGB Keyboard"/>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Campaign Goal</label>
+        <select class="input-field" id="ctx-goal">
+          <option value="drive direct sales and maximize ROAS">Drive direct sales / ROAS</option>
+          <option value="acquire new customers and build brand awareness">New customer acquisition</option>
+          <option value="re-engage lapsed customers and drive repeat purchases">Retention / re-engagement</option>
+          <option value="launch a new product and build awareness + first sales">New product launch</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Target Audience</label>
+        <input class="input-field" id="ctx-audience" value="PC gamers, streamers, age 18–34, performance-focused" placeholder="e.g. PC gamers, streamers, 18–34"/>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Additional Context <span style="color:var(--text3);font-size:10px;">(optional)</span></label>
+        <textarea class="input-field" id="ctx-extra" rows="3" placeholder="e.g. Q4 holiday push, competitor launched new keyboard, budget needs to stay flat...">Q4 holiday season push. Black Friday deals live. Competitor (Razer) running aggressive Meta campaigns.</textarea>
+      </div>
+
+      <button class="run-btn" id="run-btn" onclick="runAnalysis()">
+        ⚡ Analyze with AI
+      </button>
+    </div>
+  </div>
+
+  <!-- BOTTOM: Output -->
+  <div class="card output-panel" id="output-panel">
+    <div class="card-header">
+      <span class="card-step">03 —</span>
+      <span class="card-title">AI Analysis & Recommendations</span>
+    </div>
+    <div class="card-body" id="output-body">
+      <div class="output-empty">
+        <div class="icon">◈</div>
+        <p>Enter your campaign data and context above, then hit Analyze.</p>
+        <p style="margin-top: 6px;">Claude will generate strategic insights, budget recommendations, and ready-to-use ad copy.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="watermark">CAMPAIGNIQ · AI-POWERED MARKETING ANALYTICS · BUILT WITH CLAUDE API</div>
+</main>
+</div>
+
+<script>
+// Live metric calculation
+function recalc() {
+  const rows = document.querySelectorAll('#data-rows tr');
+  let spend = 0, rev = 0;
+  rows.forEach(r => {
+    const inputs = r.querySelectorAll('input');
+    spend += parseFloat(inputs[1]?.value) || 0;
+    rev += parseFloat(inputs[5]?.value) || 0;
+  });
+  document.getElementById('m-spend').textContent = '$' + spend.toLocaleString();
+  document.getElementById('m-rev').textContent = '$' + rev.toLocaleString();
+  const roas = spend > 0 ? (rev / spend).toFixed(1) : '—';
+  const roasEl = document.getElementById('m-roas');
+  roasEl.textContent = roas + 'x';
+  roasEl.className = 'metric-val ' + (parseFloat(roas) >= 3 ? 'good' : 'warn');
+}
+document.getElementById('data-rows').addEventListener('input', recalc);
+
+function addRow() {
+  const tbody = document.getElementById('data-rows');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td><input class="channel-name" placeholder="Channel"/></td><td><input type="number" value="0" placeholder="0"/></td><td><input type="number" value="0" placeholder="0"/></td><td><input type="number" value="0" placeholder="0"/></td><td><input type="number" value="0" placeholder="0"/></td><td><input type="number" value="0" placeholder="0"/></td>`;
+  tbody.appendChild(tr);
+  tbody.addEventListener('input', recalc);
+}
+
+// Gather table data
+function getTableData() {
+  const rows = document.querySelectorAll('#data-rows tr');
+  return Array.from(rows).map(r => {
+    const inputs = r.querySelectorAll('input');
+    const spend = parseFloat(inputs[1]?.value) || 0;
+    const clicks = parseFloat(inputs[3]?.value) || 0;
+    const impr = parseFloat(inputs[2]?.value) || 0;
+    const conv = parseFloat(inputs[4]?.value) || 0;
+    const rev = parseFloat(inputs[5]?.value) || 0;
+    return {
+      channel: inputs[0]?.value || 'Unknown',
+      spend, impressions: impr, clicks, conversions: conv, revenue: rev,
+      roas: spend > 0 ? (rev/spend).toFixed(2) : 0,
+      cpc: clicks > 0 ? (spend/clicks).toFixed(2) : 0,
+      cvr: clicks > 0 ? ((conv/clicks)*100).toFixed(2) : 0,
+      cpa: conv > 0 ? (spend/conv).toFixed(2) : 0,
+      ctr: impr > 0 ? ((clicks/impr)*100).toFixed(2) : 0
+    };
+  }).filter(r => r.channel && r.spend > 0);
+}
+
+async function runAnalysis() {
+  const data = getTableData();
+  if (data.length === 0) return alert('Please add at least one channel with spend data.');
+
+  const brand = document.getElementById('ctx-brand').value;
+  const goal = document.getElementById('ctx-goal').value;
+  const audience = document.getElementById('ctx-audience').value;
+  const extra = document.getElementById('ctx-extra').value;
+
+  const totalSpend = data.reduce((s, r) => s + r.spend, 0);
+  const totalRev = data.reduce((s, r) => s + r.revenue, 0);
+
+  const prompt = `You are a senior performance marketing strategist and AI workflow specialist. Analyze this campaign data and return EXACTLY the JSON structure below — no prose, no markdown, just the raw JSON object.
+
+CAMPAIGN DATA:
+Brand/Product: ${brand}
+Goal: ${goal}
+Target Audience: ${audience}
+Context: ${extra || 'None'}
+Total Spend: $${totalSpend.toLocaleString()} | Total Revenue: $${totalRev.toLocaleString()} | Blended ROAS: ${(totalRev/totalSpend).toFixed(1)}x
+
+Channel breakdown:
+${data.map(r => `- ${r.channel}: Spend $${r.spend}, Revenue $${r.revenue}, ROAS ${r.roas}x, CTR ${r.ctr}%, CVR ${r.cvr}%, CPA $${r.cpa}`).join('\n')}
+
+Return ONLY this JSON (no backticks, no extra text):
+{
+  "headline_insight": "One sharp sentence: the single most important finding about this campaign's performance",
+  "top_performer": {
+    "channel": "channel name",
+    "why": "2 sentences: why this channel is winning and what's driving it"
+  },
+  "biggest_waste": {
+    "channel": "channel name",
+    "why": "2 sentences: why this channel is underperforming and what to do about it"
+  },
+  "budget_move": "2-3 sentences: specific reallocation recommendation with dollar amounts or percentages",
+  "quick_win": "2 sentences: one tactical action they can do THIS WEEK to lift results",
+  "channel_scores": [
+    {"channel": "name", "score": 0-100, "recommendation": "Scale/Hold/Cut/Test"}
+  ],
+  "ad_copy": {
+    "headline": "A punchy, data-informed ad headline for the top-performing channel (under 10 words)",
+    "body": "2-3 sentence ad copy for the top channel. Make it feel like it was written by a human who understands gaming/tech audiences.",
+    "cta": "A clear, action-driven CTA"
+  }
+}`;
+
+  const btn = document.getElementById('run-btn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  btn.innerHTML = '<span class="spinner"></span>Analyzing with Claude...';
+
+  const outputBody = document.getElementById('output-body');
+  outputBody.innerHTML = `<div style="display:flex;align-items:center;gap:10px;color:var(--text2);font-family:var(--mono);font-size:12px;padding:8px 0;"><span class="spinner"></span>Claude is analyzing your campaign data<span class="cursor"></span></div>`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const apiData = await res.json();
+    const raw = apiData?.content?.[0]?.text || '';
+    let parsed;
+    try {
+      parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    } catch(e) {
+      throw new Error('Could not parse AI response');
+    }
+
+    renderResults(parsed, data);
+  } catch(err) {
+    outputBody.innerHTML = `<div style="color:var(--warn);font-family:var(--mono);font-size:12px;padding:12px 0;">⚠ Error: ${err.message}. Please try again.</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    btn.innerHTML = '⚡ Re-Analyze';
+  }
+}
+
+function scoreColor(s) {
+  if (s >= 70) return '#00e5a0';
+  if (s >= 40) return '#7c6dfa';
+  return '#ff6b35';
+}
+
+function renderResults(d, rawData) {
+  const body = document.getElementById('output-body');
+
+  const scoresHtml = (d.channel_scores || []).map(ch => {
+    const pct = Math.min(100, Math.max(0, ch.score));
+    const col = scoreColor(pct);
+    return `<div class="channel-row">
+      <div class="ch-name">${ch.channel}</div>
+      <div class="ch-bar-bg"><div class="ch-bar-fill" style="width:${pct}%;background:${col};"></div></div>
+      <div class="ch-score" style="color:${col};">${pct}</div>
+      <div class="ch-rec" style="color:${col};">${ch.recommendation}</div>
+    </div>`;
+  }).join('');
+
+  body.innerHTML = `
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px 18px;margin-bottom:20px;border-left:3px solid var(--accent);">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:5px;">Key finding</div>
+      <div style="font-family:var(--head);font-size:15px;font-weight:600;color:var(--text);line-height:1.5;">${d.headline_insight}</div>
+    </div>
+
+    <div class="result-grid">
+      <div class="result-card green">
+        <div class="rc-label">🏆 Top Performer</div>
+        <div class="rc-content"><strong>${d.top_performer?.channel}</strong><br>${d.top_performer?.why}</div>
+      </div>
+      <div class="result-card orange">
+        <div class="rc-label">⚠ Biggest Waste</div>
+        <div class="rc-content"><span class="warn-text">${d.biggest_waste?.channel}</span><br>${d.biggest_waste?.why}</div>
+      </div>
+      <div class="result-card purple">
+        <div class="rc-label">💡 Quick Win This Week</div>
+        <div class="rc-content">${d.quick_win}</div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:16px;">
+      <div class="rc-label" style="margin-bottom:8px;">📊 Budget Reallocation Recommendation</div>
+      <div style="font-size:13px;color:var(--text);line-height:1.7;">${d.budget_move}</div>
+    </div>
+
+    <div class="channel-scores">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Channel performance scores</div>
+      ${scoresHtml}
+    </div>
+
+    <div class="copy-block" style="margin-top:20px;">
+      <div class="copy-block-label">✍ AI-Generated Ad Copy — ${d.top_performer?.channel}</div>
+      <button class="copy-btn" onclick="copyCopy()">Copy</button>
+      <div style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500;margin-bottom:6px;">${d.ad_copy?.headline}</div>
+      <p style="font-style:normal;color:var(--text);font-size:13px;line-height:1.75;">${d.ad_copy?.body}</p>
+      <div style="margin-top:8px;display:inline-block;background:var(--accent);color:#000;padding:5px 14px;border-radius:5px;font-family:var(--mono);font-size:11px;font-weight:500;">${d.ad_copy?.cta}</div>
+    </div>`;
+
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.ch-bar-fill').forEach(b => {
+      const w = b.style.width;
+      b.style.width = '0';
+      setTimeout(() => b.style.width = w, 50);
+    });
+  }, 50);
+}
+
+function copyCopy() {
+  const headline = document.querySelector('.copy-block .rc-label + button + div')?.textContent || '';
+  const body = document.querySelector('.copy-block p')?.textContent || '';
+  navigator.clipboard.writeText(headline + '\n\n' + body).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+</script>
+</body>
+</html>
