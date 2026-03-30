@@ -25,112 +25,144 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { background: var(--bg); color: var(--text); font-family: var(--body); font-size: 14px; line-height: 1.6; }
 
-  /* Layout */
-  .app { min-height: 100vh; display: grid; grid-template-rows: auto 1fr; }
-  header { border-bottom: 1px solid var(--border); padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: rgba(10,10,11,0.92); backdrop-filter: blur(12px); z-index: 100; }
+  .app { min-height: 100vh; }
+  header { border-bottom: 1px solid var(--border); padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: rgba(10,10,11,0.94); backdrop-filter: blur(12px); z-index: 100; }
   .logo { font-family: var(--head); font-weight: 800; font-size: 18px; letter-spacing: -0.03em; }
   .logo span { color: var(--accent); }
   .logo-sub { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.1em; margin-top: 1px; }
   .badge { font-family: var(--mono); font-size: 10px; padding: 3px 10px; border-radius: 20px; border: 1px solid var(--accent); color: var(--accent); letter-spacing: 0.06em; }
 
-  main { display: grid; grid-template-columns: 1fr 1fr; gap: 0; max-width: 1400px; margin: 0 auto; width: 100%; padding: 32px; gap: 24px; }
+  main { max-width: 1400px; margin: 0 auto; padding: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 
   /* Cards */
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-  .card-header { padding: 18px 22px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: baseline; gap: 10px; }
+  .card-header { padding: 16px 22px 13px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .card-header-left { display: flex; align-items: baseline; gap: 10px; }
   .card-title { font-family: var(--head); font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: var(--text); text-transform: uppercase; }
   .card-step { font-family: var(--mono); font-size: 10px; color: var(--accent); letter-spacing: 0.08em; }
   .card-body { padding: 20px 22px; }
 
-  /* Input table */
+  /* Source tabs */
+  .source-tabs { display: flex; gap: 3px; padding: 4px; background: var(--surface2); border-radius: 8px; overflow-x: auto; }
+  .stab { padding: 6px 14px; border-radius: 6px; font-family: var(--mono); font-size: 11px; cursor: pointer; color: var(--text2); white-space: nowrap; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+  .stab.active { background: var(--surface); color: var(--text); }
+  .stab .remove { opacity: 0; font-size: 13px; line-height: 1; transition: opacity 0.15s; }
+  .stab:hover .remove { opacity: 0.6; }
+  .stab .remove:hover { opacity: 1; color: var(--warn); }
+  .add-source-btn { padding: 6px 12px; border-radius: 6px; font-family: var(--mono); font-size: 11px; cursor: pointer; color: var(--text3); white-space: nowrap; background: none; border: 1px dashed var(--border-hi); transition: all 0.15s; }
+  .add-source-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* Upload zone */
+  .upload-zone { border: 1px dashed var(--border-hi); border-radius: 9px; padding: 28px 20px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; margin-bottom: 14px; }
+  .upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: rgba(0,229,160,0.04); }
+  .upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-icon { font-size: 22px; margin-bottom: 8px; opacity: 0.5; }
+  .upload-title { font-family: var(--mono); font-size: 12px; color: var(--text2); }
+  .upload-sub { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-top: 4px; }
+  .upload-success { border-color: var(--accent); background: rgba(0,229,160,0.06); }
+  .upload-success .upload-icon { opacity: 1; }
+
+  /* Column mapper */
+  .mapper { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 14px 16px; margin-bottom: 14px; display: none; }
+  .mapper.visible { display: block; }
+  .mapper-title { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+  .mapper-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .map-item label { font-family: var(--mono); font-size: 10px; color: var(--accent2); letter-spacing: 0.05em; display: block; margin-bottom: 4px; }
+  .map-item select { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 5px; padding: 5px 8px; color: var(--text); font-family: var(--mono); font-size: 11px; outline: none; }
+  .map-item select:focus { border-color: var(--accent); }
+
+  /* Data table */
+  .data-table-wrap { overflow-x: auto; max-height: 260px; overflow-y: auto; border-radius: 8px; border: 1px solid var(--border); }
   .data-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; }
-  .data-table th { color: var(--text3); font-weight: 400; text-align: left; padding: 6px 8px 10px; letter-spacing: 0.06em; font-size: 11px; border-bottom: 1px solid var(--border); }
-  .data-table td { padding: 4px 2px; }
+  .data-table th { color: var(--text3); font-weight: 400; text-align: left; padding: 7px 10px; letter-spacing: 0.06em; font-size: 10px; border-bottom: 1px solid var(--border); background: var(--surface2); position: sticky; top: 0; white-space: nowrap; }
+  .data-table td { padding: 4px 2px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+  .data-table tr:last-child td { border-bottom: none; }
   .data-table td input {
-    width: 100%; background: var(--surface2); border: 1px solid transparent; border-radius: 5px; padding: 6px 8px;
-    color: var(--text); font-family: var(--mono); font-size: 12px; outline: none; transition: border-color 0.2s;
+    width: 100%; background: transparent; border: 1px solid transparent; border-radius: 4px; padding: 5px 8px;
+    color: var(--text); font-family: var(--mono); font-size: 11px; outline: none; transition: border-color 0.15s;
   }
-  .data-table td input:focus { border-color: var(--accent); }
+  .data-table td input:focus { background: var(--surface2); border-color: var(--accent); }
   .data-table td input.channel-name { color: var(--accent2); font-weight: 500; }
+  .data-table td .del-row { background: none; border: none; color: var(--text3); cursor: pointer; padding: 4px 6px; border-radius: 4px; font-size: 13px; transition: color 0.15s; }
+  .data-table td .del-row:hover { color: var(--warn); }
 
-  .add-row-btn { margin-top: 10px; background: none; border: 1px dashed var(--border-hi); color: var(--text2); padding: 7px 14px; border-radius: 6px; cursor: pointer; font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; width: 100%; transition: all 0.2s; }
-  .add-row-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .table-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .tbl-btn { background: none; border: 1px dashed var(--border-hi); color: var(--text2); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; transition: all 0.15s; }
+  .tbl-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-  /* Metrics bar */
-  .metrics-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
-  .metric-box { background: var(--surface2); border-radius: 8px; padding: 12px 14px; border: 1px solid var(--border); }
+  /* Metrics */
+  .metrics-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+  .metric-box { background: var(--surface2); border-radius: 8px; padding: 11px 14px; border: 1px solid var(--border); }
   .metric-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; }
-  .metric-val { font-family: var(--head); font-size: 22px; font-weight: 700; margin-top: 3px; color: var(--text); }
+  .metric-val { font-family: var(--head); font-size: 20px; font-weight: 700; margin-top: 2px; }
   .metric-val.good { color: var(--accent); }
   .metric-val.warn { color: var(--warn); }
+  .metric-val.neutral { color: var(--text); }
 
-  /* Context inputs */
+  /* Context panel */
   .input-group { margin-bottom: 14px; }
   .input-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; display: block; }
   .input-field { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 7px; padding: 9px 12px; color: var(--text); font-family: var(--body); font-size: 13px; outline: none; transition: border-color 0.2s; resize: vertical; }
   .input-field:focus { border-color: var(--accent); }
   select.input-field option { background: var(--surface2); }
 
+  /* Merge summary */
+  .merge-pill { display: inline-flex; align-items: center; gap: 5px; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; font-family: var(--mono); font-size: 10px; color: var(--text2); margin-right: 5px; margin-bottom: 5px; }
+  .merge-pill .dot { width: 6px; height: 6px; border-radius: 50%; }
+
   /* Run button */
-  .run-btn { width: 100%; padding: 13px; background: var(--accent); color: #000; font-family: var(--head); font-size: 14px; font-weight: 700; letter-spacing: 0.04em; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; position: relative; overflow: hidden; }
-  .run-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 24px rgba(0,229,160,0.3); }
-  .run-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+  .run-btn { width: 100%; padding: 13px; background: var(--accent); color: #000; font-family: var(--head); font-size: 14px; font-weight: 700; letter-spacing: 0.04em; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
+  .run-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 24px rgba(0,229,160,0.28); }
+  .run-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
   .run-btn.loading { background: var(--surface2); color: var(--accent); border: 1px solid var(--accent); }
 
-  /* Output panel */
+  /* Output */
   .output-panel { grid-column: 1 / -1; }
   .output-empty { text-align: center; padding: 48px 24px; }
-  .output-empty .icon { font-size: 36px; margin-bottom: 12px; opacity: 0.3; }
+  .output-empty .icon { font-size: 32px; margin-bottom: 10px; opacity: 0.25; }
   .output-empty p { color: var(--text3); font-family: var(--mono); font-size: 12px; }
 
-  /* Results */
-  .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
-  .result-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; position: relative; overflow: hidden; }
+  .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+  .result-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 15px 17px; position: relative; overflow: hidden; }
   .result-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
   .result-card.green::before { background: var(--accent); }
   .result-card.purple::before { background: var(--accent2); }
   .result-card.orange::before { background: var(--warn); }
   .rc-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
-  .rc-content { font-family: var(--body); font-size: 13px; color: var(--text); line-height: 1.65; }
+  .rc-content { font-size: 13px; color: var(--text); line-height: 1.65; }
   .rc-content strong { color: var(--accent); font-weight: 500; }
   .rc-content .warn-text { color: var(--warn); font-weight: 500; }
 
-  /* Copy block */
-  .copy-block { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-top: 16px; position: relative; }
-  .copy-block-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
-  .copy-block p { font-size: 14px; color: var(--text); line-height: 1.75; font-style: italic; }
-  .copy-btn { position: absolute; top: 14px; right: 14px; background: var(--surface); border: 1px solid var(--border-hi); color: var(--text2); padding: 5px 12px; border-radius: 5px; cursor: pointer; font-family: var(--mono); font-size: 11px; transition: all 0.2s; }
-  .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
-
-  /* Channel scores */
-  .channel-scores { margin-top: 16px; }
-  .channel-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; padding: 10px 14px; background: var(--surface2); border-radius: 8px; border: 1px solid var(--border); }
-  .ch-name { font-family: var(--mono); font-size: 12px; color: var(--accent2); width: 110px; flex-shrink: 0; }
+  .channel-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; padding: 9px 13px; background: var(--surface2); border-radius: 8px; border: 1px solid var(--border); }
+  .ch-name { font-family: var(--mono); font-size: 11px; color: var(--accent2); width: 120px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ch-source { font-family: var(--mono); font-size: 10px; color: var(--text3); width: 70px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .ch-bar-bg { flex: 1; height: 5px; background: var(--bg); border-radius: 3px; overflow: hidden; }
   .ch-bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
-  .ch-score { font-family: var(--mono); font-size: 11px; width: 36px; text-align: right; flex-shrink: 0; }
-  .ch-rec { font-size: 11px; color: var(--text3); flex: 0 0 90px; text-align: right; }
+  .ch-score { font-family: var(--mono); font-size: 11px; width: 30px; text-align: right; flex-shrink: 0; }
+  .ch-rec { font-size: 11px; flex: 0 0 80px; text-align: right; }
 
-  /* Streaming cursor */
+  .copy-block { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 17px 19px; margin-top: 16px; position: relative; }
+  .copy-block-label { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+  .copy-btn { position: absolute; top: 13px; right: 13px; background: var(--surface); border: 1px solid var(--border-hi); color: var(--text2); padding: 5px 11px; border-radius: 5px; cursor: pointer; font-family: var(--mono); font-size: 11px; transition: all 0.15s; }
+  .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-  .cursor { display: inline-block; width: 2px; height: 14px; background: var(--accent); margin-left: 2px; vertical-align: middle; animation: blink 0.8s infinite; }
-
-  /* Spinner */
+  .cursor { display: inline-block; width: 2px; height: 13px; background: var(--accent); margin-left: 2px; vertical-align: middle; animation: blink 0.8s infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--accent); border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
+  .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid var(--accent); border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 7px; }
 
-  /* Tabs */
-  .output-tabs { display: flex; gap: 2px; margin-bottom: 16px; background: var(--surface2); padding: 4px; border-radius: 8px; width: fit-content; }
-  .otab { padding: 6px 16px; border-radius: 6px; font-family: var(--mono); font-size: 11px; cursor: pointer; color: var(--text2); letter-spacing: 0.05em; transition: all 0.2s; }
-  .otab.active { background: var(--surface); color: var(--text); }
-
-  /* Watermark */
   .watermark { text-align: center; padding: 24px; color: var(--text3); font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; grid-column: 1/-1; }
+
+  /* CSV template hint */
+  .template-hint { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-top: 6px; }
+  .template-hint a { color: var(--accent2); cursor: pointer; text-decoration: none; }
+  .template-hint a:hover { text-decoration: underline; }
 
   @media (max-width: 900px) {
     main { grid-template-columns: 1fr; padding: 16px; }
     .output-panel { grid-column: 1; }
     .result-grid { grid-template-columns: 1fr; }
+    .mapper-grid { grid-template-columns: 1fr 1fr; }
   }
 </style>
 </head>
@@ -145,84 +177,45 @@
 </header>
 
 <main>
-  <!-- LEFT: Data Input -->
+
+  <!-- LEFT: Data Sources -->
   <div class="card">
     <div class="card-header">
-      <span class="card-step">01 —</span>
-      <span class="card-title">Campaign Data Input</span>
+      <div class="card-header-left">
+        <span class="card-step">01 —</span>
+        <span class="card-title">Data Sources</span>
+      </div>
+      <button class="add-source-btn" onclick="addSource()">+ Add source</button>
     </div>
     <div class="card-body">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Channel</th>
-            <th>Spend ($)</th>
-            <th>Impressions</th>
-            <th>Clicks</th>
-            <th>Conversions</th>
-            <th>Revenue ($)</th>
-          </tr>
-        </thead>
-        <tbody id="data-rows">
-          <tr>
-            <td><input class="channel-name" value="Paid Search" placeholder="Channel"/></td>
-            <td><input type="number" value="4200" placeholder="0"/></td>
-            <td><input type="number" value="280000" placeholder="0"/></td>
-            <td><input type="number" value="8400" placeholder="0"/></td>
-            <td><input type="number" value="210" placeholder="0"/></td>
-            <td><input type="number" value="18900" placeholder="0"/></td>
-          </tr>
-          <tr>
-            <td><input class="channel-name" value="Meta Ads" placeholder="Channel"/></td>
-            <td><input type="number" value="3100" placeholder="0"/></td>
-            <td><input type="number" value="520000" placeholder="0"/></td>
-            <td><input type="number" value="6240" placeholder="0"/></td>
-            <td><input type="number" value="93" placeholder="0"/></td>
-            <td><input type="number" value="7440" placeholder="0"/></td>
-          </tr>
-          <tr>
-            <td><input class="channel-name" value="Email" placeholder="Channel"/></td>
-            <td><input type="number" value="800" placeholder="0"/></td>
-            <td><input type="number" value="95000" placeholder="0"/></td>
-            <td><input type="number" value="9500" placeholder="0"/></td>
-            <td><input type="number" value="285" placeholder="0"/></td>
-            <td><input type="number" value="22800" placeholder="0"/></td>
-          </tr>
-          <tr>
-            <td><input class="channel-name" value="TikTok Ads" placeholder="Channel"/></td>
-            <td><input type="number" value="2200" placeholder="0"/></td>
-            <td><input type="number" value="890000" placeholder="0"/></td>
-            <td><input type="number" value="5340" placeholder="0"/></td>
-            <td><input type="number" value="53" placeholder="0"/></td>
-            <td><input type="number" value="3710" placeholder="0"/></td>
-          </tr>
-          <tr>
-            <td><input class="channel-name" value="YouTube" placeholder="Channel"/></td>
-            <td><input type="number" value="1800" placeholder="0"/></td>
-            <td><input type="number" value="340000" placeholder="0"/></td>
-            <td><input type="number" value="2380" placeholder="0"/></td>
-            <td><input type="number" value="71" placeholder="0"/></td>
-            <td><input type="number" value="6390" placeholder="0"/></td>
-          </tr>
-        </tbody>
-      </table>
-      <button class="add-row-btn" onclick="addRow()">+ Add channel</button>
 
-      <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);">
-        <div class="metrics-row" id="live-metrics">
-          <div class="metric-box"><div class="metric-label">Total Spend</div><div class="metric-val" id="m-spend">$12,100</div></div>
-          <div class="metric-box"><div class="metric-label">Total Revenue</div><div class="metric-val good" id="m-rev">$59,240</div></div>
-          <div class="metric-box"><div class="metric-label">Blended ROAS</div><div class="metric-val good" id="m-roas">4.9x</div></div>
+      <!-- Source tabs -->
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
+        <div class="source-tabs" id="source-tabs"></div>
+      </div>
+
+      <!-- Per-source panel -->
+      <div id="source-panels"></div>
+
+      <!-- Merged metrics -->
+      <div style="padding-top:14px;border-top:1px solid var(--border);margin-top:6px;">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Merged totals <span id="source-pills"></span></div>
+        <div class="metrics-row">
+          <div class="metric-box"><div class="metric-label">Total Spend</div><div class="metric-val neutral" id="m-spend">—</div></div>
+          <div class="metric-box"><div class="metric-label">Total Revenue</div><div class="metric-val good" id="m-rev">—</div></div>
+          <div class="metric-box"><div class="metric-label">Blended ROAS</div><div class="metric-val good" id="m-roas">—</div></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- RIGHT: Context -->
+  <!-- RIGHT: Context + Run -->
   <div class="card">
     <div class="card-header">
-      <span class="card-step">02 —</span>
-      <span class="card-title">Campaign Context</span>
+      <div class="card-header-left">
+        <span class="card-step">02 —</span>
+        <span class="card-title">Campaign Context</span>
+      </div>
     </div>
     <div class="card-body">
       <div class="input-group">
@@ -235,7 +228,7 @@
           <option value="drive direct sales and maximize ROAS">Drive direct sales / ROAS</option>
           <option value="acquire new customers and build brand awareness">New customer acquisition</option>
           <option value="re-engage lapsed customers and drive repeat purchases">Retention / re-engagement</option>
-          <option value="launch a new product and build awareness + first sales">New product launch</option>
+          <option value="launch a new product and build awareness and first sales">New product launch</option>
         </select>
       </div>
       <div class="input-group">
@@ -244,26 +237,25 @@
       </div>
       <div class="input-group">
         <label class="input-label">Additional Context <span style="color:var(--text3);font-size:10px;">(optional)</span></label>
-        <textarea class="input-field" id="ctx-extra" rows="3" placeholder="e.g. Q4 holiday push, competitor launched new keyboard, budget needs to stay flat...">Q4 holiday season push. Black Friday deals live. Competitor (Razer) running aggressive Meta campaigns.</textarea>
+        <textarea class="input-field" id="ctx-extra" rows="3" placeholder="Competitive landscape, seasonality, budget constraints...">Q4 holiday season. Black Friday deals live. Competitor (Razer) running aggressive Meta campaigns.</textarea>
       </div>
-
-      <button class="run-btn" id="run-btn" onclick="runAnalysis()">
-        ⚡ Analyze with AI
-      </button>
+      <button class="run-btn" id="run-btn" onclick="runAnalysis()">⚡ Analyze with AI</button>
     </div>
   </div>
 
-  <!-- BOTTOM: Output -->
-  <div class="card output-panel" id="output-panel">
+  <!-- OUTPUT -->
+  <div class="card output-panel">
     <div class="card-header">
-      <span class="card-step">03 —</span>
-      <span class="card-title">AI Analysis & Recommendations</span>
+      <div class="card-header-left">
+        <span class="card-step">03 —</span>
+        <span class="card-title">AI Analysis & Recommendations</span>
+      </div>
     </div>
     <div class="card-body" id="output-body">
       <div class="output-empty">
         <div class="icon">◈</div>
-        <p>Enter your campaign data and context above, then hit Analyze.</p>
-        <p style="margin-top: 6px;">Claude will generate strategic insights, budget recommendations, and ready-to-use ad copy.</p>
+        <p>Upload CSVs or enter data above, then hit Analyze.</p>
+        <p style="margin-top:5px;">Claude will return insights, budget recommendations, and ad copy.</p>
       </div>
     </div>
   </div>
@@ -273,217 +265,456 @@
 </div>
 
 <script>
-// Live metric calculation
-function recalc() {
-  const rows = document.querySelectorAll('#data-rows tr');
-  let spend = 0, rev = 0;
-  rows.forEach(r => {
-    const inputs = r.querySelectorAll('input');
-    spend += parseFloat(inputs[1]?.value) || 0;
-    rev += parseFloat(inputs[5]?.value) || 0;
+// ─── State ────────────────────────────────────────────────────────────────────
+const FIELDS = ['channel','spend','impressions','clicks','conversions','revenue'];
+const FIELD_LABELS = ['Channel','Spend ($)','Impressions','Clicks','Conversions','Revenue ($)'];
+const SOURCE_COLORS = ['#00e5a0','#7c6dfa','#ff6b35','#facc15','#38bdf8','#f472b6'];
+
+let sources = [];   // [{id, name, color, rows:[{channel,spend,...}]}]
+let activeSource = null;
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+function init() {
+  addSource('Meta Ads', [
+    {channel:'Paid Search',  spend:4200, impressions:280000, clicks:8400,  conversions:210, revenue:18900},
+    {channel:'Meta Ads',     spend:3100, impressions:520000, clicks:6240,  conversions:93,  revenue:7440},
+    {channel:'Email',        spend:800,  impressions:95000,  clicks:9500,  conversions:285, revenue:22800},
+    {channel:'TikTok Ads',   spend:2200, impressions:890000, clicks:5340,  conversions:53,  revenue:3710},
+    {channel:'YouTube',      spend:1800, impressions:340000, clicks:2380,  conversions:71,  revenue:6390},
+  ]);
+}
+
+function addSource(name, rows) {
+  const id = 'src_' + Date.now();
+  const color = SOURCE_COLORS[sources.length % SOURCE_COLORS.length];
+  const srcName = name || ('Source ' + (sources.length + 1));
+  sources.push({ id, name: srcName, color, rows: rows || [] });
+  activeSource = id;
+  renderTabs();
+  renderActivePanel();
+  recalc();
+}
+
+function removeSource(id, e) {
+  e.stopPropagation();
+  sources = sources.filter(s => s.id !== id);
+  if (activeSource === id) activeSource = sources.length ? sources[sources.length-1].id : null;
+  if (!sources.length) addSource();
+  else { renderTabs(); renderActivePanel(); recalc(); }
+}
+
+function switchSource(id) {
+  activeSource = id;
+  renderTabs();
+  renderActivePanel();
+}
+
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
+function renderTabs() {
+  const tabsEl = document.getElementById('source-tabs');
+  tabsEl.innerHTML = sources.map(s => `
+    <div class="stab ${s.id === activeSource ? 'active' : ''}" onclick="switchSource('${s.id}')">
+      <span style="width:6px;height:6px;border-radius:50%;background:${s.color};flex-shrink:0;display:inline-block;"></span>
+      <span ondblclick="renameSource('${s.id}',this)" title="Double-click to rename">${esc(s.name)}</span>
+      <span class="remove" onclick="removeSource('${s.id}',event)">×</span>
+    </div>`).join('');
+}
+
+function renameSource(id, el) {
+  const src = sources.find(s => s.id === id);
+  if (!src) return;
+  const val = prompt('Rename source:', src.name);
+  if (val && val.trim()) { src.name = val.trim(); renderTabs(); recalc(); }
+}
+
+// ─── Panel ────────────────────────────────────────────────────────────────────
+function renderActivePanel() {
+  const container = document.getElementById('source-panels');
+  const src = sources.find(s => s.id === activeSource);
+  if (!src) { container.innerHTML = ''; return; }
+
+  container.innerHTML = `
+    <div id="panel_${src.id}">
+      <!-- Upload zone -->
+      <div class="upload-zone" id="zone_${src.id}" ondragover="onDrag(event,'${src.id}')" ondragleave="offDrag('${src.id}')" ondrop="onDrop(event,'${src.id}')">
+        <input type="file" accept=".csv,.tsv,.txt" onchange="onFile(event,'${src.id}')"/>
+        <div class="upload-icon" id="zi_${src.id}">↑</div>
+        <div class="upload-title" id="zt_${src.id}">Drop CSV here or click to upload</div>
+        <div class="upload-sub" id="zs_${src.id}">Supports .csv and .tsv — any column order</div>
+      </div>
+      <div class="template-hint">No CSV? <a onclick="downloadTemplate()">Download template</a> · or enter data manually below</div>
+
+      <!-- Column mapper (shown after CSV upload) -->
+      <div class="mapper" id="mapper_${src.id}">
+        <div class="mapper-title">Map your columns → required fields</div>
+        <div class="mapper-grid" id="mapgrid_${src.id}"></div>
+        <button class="tbl-btn" style="margin-top:10px;" onclick="applyMapping('${src.id}')">Apply mapping</button>
+      </div>
+
+      <!-- Editable table -->
+      <div class="data-table-wrap" style="margin-top:12px;">
+        <table class="data-table" id="table_${src.id}">
+          <thead><tr>
+            ${FIELD_LABELS.map(l => `<th>${l}</th>`).join('')}
+            <th></th>
+          </tr></thead>
+          <tbody id="tbody_${src.id}"></tbody>
+        </table>
+      </div>
+      <div class="table-actions">
+        <button class="tbl-btn" onclick="addRow('${src.id}')">+ Add row</button>
+        <button class="tbl-btn" onclick="clearRows('${src.id}')">Clear</button>
+      </div>
+    </div>`;
+
+  renderRows(src);
+}
+
+// ─── Rows ──────────────────────────────────────────────────────────────────────
+function renderRows(src) {
+  const tbody = document.getElementById('tbody_' + src.id);
+  if (!tbody) return;
+  tbody.innerHTML = src.rows.map((row, i) => `
+    <tr>
+      ${FIELDS.map((f,fi) => `<td><input class="${f==='channel'?'channel-name':''}" value="${esc(String(row[f]??''))}" oninput="updateRow('${src.id}',${i},'${f}',this.value)" placeholder="${FIELD_LABELS[fi]}"/></td>`).join('')}
+      <td><button class="del-row" onclick="delRow('${src.id}',${i})">×</button></td>
+    </tr>`).join('');
+}
+
+function updateRow(srcId, i, field, val) {
+  const src = sources.find(s => s.id === srcId);
+  if (!src || !src.rows[i]) return;
+  src.rows[i][field] = field === 'channel' ? val : (parseFloat(val) || 0);
+  recalc();
+}
+
+function addRow(srcId) {
+  const src = sources.find(s => s.id === srcId);
+  if (!src) return;
+  src.rows.push({channel:'',spend:0,impressions:0,clicks:0,conversions:0,revenue:0});
+  renderRows(src);
+  recalc();
+}
+
+function delRow(srcId, i) {
+  const src = sources.find(s => s.id === srcId);
+  if (!src) return;
+  src.rows.splice(i, 1);
+  renderRows(src);
+  recalc();
+}
+
+function clearRows(srcId) {
+  const src = sources.find(s => s.id === srcId);
+  if (!src) return;
+  src.rows = [];
+  renderRows(src);
+  recalc();
+}
+
+// ─── CSV Upload ───────────────────────────────────────────────────────────────
+function onDrag(e, id) { e.preventDefault(); document.getElementById('zone_'+id)?.classList.add('drag'); }
+function offDrag(id) { document.getElementById('zone_'+id)?.classList.remove('drag'); }
+function onDrop(e, id) { e.preventDefault(); offDrag(id); const f = e.dataTransfer.files[0]; if (f) readCSV(f, id); }
+function onFile(e, id) { const f = e.target.files[0]; if (f) readCSV(f, id); }
+
+function readCSV(file, srcId) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const text = e.target.result;
+    const delim = text.indexOf('\t') > text.indexOf(',') && text.indexOf('\t') !== -1 ? '\t' : ',';
+    const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
+    if (lines.length < 2) return alert('CSV must have a header row and at least one data row.');
+
+    const headers = lines[0].split(delim).map(h => h.replace(/^"|"$/g,'').trim().toLowerCase());
+    const rawRows = lines.slice(1).map(l =>
+      l.split(delim).map(c => c.replace(/^"|"$/g,'').replace(/,/g,'').trim())
+    );
+
+    const src = sources.find(s => s.id === srcId);
+    if (!src) return;
+    src._csvHeaders = headers;
+    src._csvRaw = rawRows;
+
+    // Update upload zone
+    const zone = document.getElementById('zone_' + srcId);
+    if (zone) { zone.classList.add('upload-success'); }
+    const zt = document.getElementById('zt_' + srcId);
+    if (zt) zt.textContent = '✓ ' + file.name + ' (' + rawRows.length + ' rows)';
+    const zs = document.getElementById('zs_' + srcId);
+    if (zs) zs.textContent = headers.length + ' columns detected';
+
+    // Auto-map
+    const mapping = autoMap(headers);
+    src._mapping = mapping;
+
+    // Show mapper if any field is unresolved
+    const unresolved = FIELDS.filter(f => f !== 'channel' && mapping[f] === null);
+    if (unresolved.length > 0) {
+      showMapper(srcId, headers, mapping);
+    } else {
+      applyMapping(srcId);
+    }
+  };
+  reader.readAsText(file);
+}
+
+const ALIASES = {
+  channel:     ['channel','source','platform','campaign','medium','ad channel','ad source','network'],
+  spend:       ['spend','cost','amount spent','budget','ad spend','total spend','total cost','investment','expenditure'],
+  impressions: ['impressions','impr','views','reach'],
+  clicks:      ['clicks','click','link clicks','total clicks'],
+  conversions: ['conversions','conv','purchases','orders','sales','transactions','leads','results'],
+  revenue:     ['revenue','sales revenue','total revenue','value','conversion value','purchase value','roas value','income'],
+};
+
+function autoMap(headers) {
+  const mapping = {};
+  FIELDS.forEach(f => {
+    const found = headers.findIndex(h => ALIASES[f]?.some(a => h.includes(a)));
+    mapping[f] = found >= 0 ? found : null;
   });
-  document.getElementById('m-spend').textContent = '$' + spend.toLocaleString();
-  document.getElementById('m-rev').textContent = '$' + rev.toLocaleString();
-  const roas = spend > 0 ? (rev / spend).toFixed(1) : '—';
+  return mapping;
+}
+
+function showMapper(srcId, headers, mapping) {
+  const mapper = document.getElementById('mapper_' + srcId);
+  const grid = document.getElementById('mapgrid_' + srcId);
+  if (!mapper || !grid) return;
+  mapper.classList.add('visible');
+
+  const opts = ['— skip —', ...headers].map((h,i) => `<option value="${i-1}">${h}</option>`).join('');
+  grid.innerHTML = FIELDS.map(f => `
+    <div class="map-item">
+      <label>${FIELD_LABELS[FIELDS.indexOf(f)]}</label>
+      <select id="map_${srcId}_${f}">
+        ${['— skip —', ...headers].map((h,i) => `<option value="${i-1}" ${mapping[f]===i-1?'selected':''}>${h}</option>`).join('')}
+      </select>
+    </div>`).join('');
+}
+
+function applyMapping(srcId) {
+  const src = sources.find(s => s.id === srcId);
+  if (!src || !src._csvRaw) return;
+
+  const mapping = {};
+  FIELDS.forEach(f => {
+    const el = document.getElementById('map_' + srcId + '_' + f);
+    mapping[f] = el ? parseInt(el.value) : (src._mapping?.[f] ?? null);
+  });
+
+  src.rows = src._csvRaw.map(cols => {
+    const row = {};
+    FIELDS.forEach(f => {
+      const idx = mapping[f];
+      const val = idx !== null && idx >= 0 ? cols[idx] : '';
+      row[f] = f === 'channel' ? (val || 'Unknown') : (parseFloat(val) || 0);
+    });
+    return row;
+  });
+
+  const mapper = document.getElementById('mapper_' + srcId);
+  if (mapper) mapper.classList.remove('visible');
+
+  renderRows(src);
+  recalc();
+}
+
+// ─── Template ─────────────────────────────────────────────────────────────────
+function downloadTemplate() {
+  const csv = [
+    'channel,spend,impressions,clicks,conversions,revenue',
+    'Paid Search,4200,280000,8400,210,18900',
+    'Meta Ads,3100,520000,6240,93,7440',
+    'Email,800,95000,9500,285,22800',
+    'TikTok Ads,2200,890000,5340,53,3710',
+  ].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'campaigniq-template.csv';
+  a.click();
+}
+
+// ─── Metrics ──────────────────────────────────────────────────────────────────
+function recalc() {
+  const all = getAllRows();
+  const spend = all.reduce((s,r) => s + r.spend, 0);
+  const rev   = all.reduce((s,r) => s + r.revenue, 0);
+  const roas  = spend > 0 ? (rev/spend) : 0;
+
+  document.getElementById('m-spend').textContent = spend ? '$' + spend.toLocaleString() : '—';
+  document.getElementById('m-rev').textContent   = rev   ? '$' + rev.toLocaleString()   : '—';
+
   const roasEl = document.getElementById('m-roas');
-  roasEl.textContent = roas + 'x';
-  roasEl.className = 'metric-val ' + (parseFloat(roas) >= 3 ? 'good' : 'warn');
-}
-document.getElementById('data-rows').addEventListener('input', recalc);
+  roasEl.textContent = roas ? roas.toFixed(1) + 'x' : '—';
+  roasEl.className = 'metric-val ' + (roas >= 3 ? 'good' : roas > 0 ? 'warn' : 'neutral');
 
-function addRow() {
-  const tbody = document.getElementById('data-rows');
-  const tr = document.createElement('tr');
-  tr.innerHTML = `<td><input class="channel-name" placeholder="Channel"/></td><td><input type="number" value="0" placeholder="0"/></td><td><input type="number" value="0" placeholder="0"/></td><td><input type="number" value="0" placeholder="0"/></td><td><input type="number" value="0" placeholder="0"/></td><td><input type="number" value="0" placeholder="0"/></td>`;
-  tbody.appendChild(tr);
-  tbody.addEventListener('input', recalc);
-}
-
-// Gather table data
-function getTableData() {
-  const rows = document.querySelectorAll('#data-rows tr');
-  return Array.from(rows).map(r => {
-    const inputs = r.querySelectorAll('input');
-    const spend = parseFloat(inputs[1]?.value) || 0;
-    const clicks = parseFloat(inputs[3]?.value) || 0;
-    const impr = parseFloat(inputs[2]?.value) || 0;
-    const conv = parseFloat(inputs[4]?.value) || 0;
-    const rev = parseFloat(inputs[5]?.value) || 0;
-    return {
-      channel: inputs[0]?.value || 'Unknown',
-      spend, impressions: impr, clicks, conversions: conv, revenue: rev,
-      roas: spend > 0 ? (rev/spend).toFixed(2) : 0,
-      cpc: clicks > 0 ? (spend/clicks).toFixed(2) : 0,
-      cvr: clicks > 0 ? ((conv/clicks)*100).toFixed(2) : 0,
-      cpa: conv > 0 ? (spend/conv).toFixed(2) : 0,
-      ctr: impr > 0 ? ((clicks/impr)*100).toFixed(2) : 0
-    };
-  }).filter(r => r.channel && r.spend > 0);
+  // Source pills
+  const pillsEl = document.getElementById('source-pills');
+  if (pillsEl) {
+    pillsEl.innerHTML = sources.map(s =>
+      `<span class="merge-pill"><span class="dot" style="background:${s.color}"></span>${esc(s.name)} (${s.rows.filter(r=>r.spend>0).length})</span>`
+    ).join('');
+  }
 }
 
+function getAllRows() {
+  return sources.flatMap(src =>
+    src.rows.filter(r => r.channel && r.spend > 0).map(r => ({...r, _source: src.name, _color: src.color}))
+  );
+}
+
+// ─── Analysis ─────────────────────────────────────────────────────────────────
 async function runAnalysis() {
-  const data = getTableData();
-  if (data.length === 0) return alert('Please add at least one channel with spend data.');
+  const data = getAllRows().map(r => ({
+    ...r,
+    roas: r.spend > 0 ? (r.revenue/r.spend).toFixed(2) : 0,
+    cpc:  r.clicks > 0 ? (r.spend/r.clicks).toFixed(2) : 0,
+    cvr:  r.clicks > 0 ? ((r.conversions/r.clicks)*100).toFixed(2) : 0,
+    cpa:  r.conversions > 0 ? (r.spend/r.conversions).toFixed(2) : 0,
+    ctr:  r.impressions > 0 ? ((r.clicks/r.impressions)*100).toFixed(2) : 0,
+  }));
 
-  const brand = document.getElementById('ctx-brand').value;
-  const goal = document.getElementById('ctx-goal').value;
+  if (!data.length) return alert('Add at least one channel with spend data before analyzing.');
+
+  const brand    = document.getElementById('ctx-brand').value;
+  const goal     = document.getElementById('ctx-goal').value;
   const audience = document.getElementById('ctx-audience').value;
-  const extra = document.getElementById('ctx-extra').value;
+  const extra    = document.getElementById('ctx-extra').value;
 
-  const totalSpend = data.reduce((s, r) => s + r.spend, 0);
-  const totalRev = data.reduce((s, r) => s + r.revenue, 0);
+  const totalSpend = data.reduce((s,r) => s+r.spend, 0);
+  const totalRev   = data.reduce((s,r) => s+r.revenue, 0);
+  const sourceList = [...new Set(data.map(r => r._source))];
 
-  const prompt = `You are a senior performance marketing strategist and AI workflow specialist. Analyze this campaign data and return EXACTLY the JSON structure below — no prose, no markdown, just the raw JSON object.
+  const prompt = `You are a senior performance marketing strategist. Analyze this multi-source campaign data and return ONLY a raw JSON object — no prose, no markdown, no backticks.
 
-CAMPAIGN DATA:
-Brand/Product: ${brand}
+CAMPAIGN:
+Brand: ${brand}
 Goal: ${goal}
-Target Audience: ${audience}
+Audience: ${audience}
 Context: ${extra || 'None'}
+Data sources: ${sourceList.join(', ')}
 Total Spend: $${totalSpend.toLocaleString()} | Total Revenue: $${totalRev.toLocaleString()} | Blended ROAS: ${(totalRev/totalSpend).toFixed(1)}x
 
-Channel breakdown:
-${data.map(r => `- ${r.channel}: Spend $${r.spend}, Revenue $${r.revenue}, ROAS ${r.roas}x, CTR ${r.ctr}%, CVR ${r.cvr}%, CPA $${r.cpa}`).join('\n')}
+Channels (with source):
+${data.map(r => `- [${r._source}] ${r.channel}: Spend $${r.spend}, Revenue $${r.revenue}, ROAS ${r.roas}x, CTR ${r.ctr}%, CVR ${r.cvr}%, CPA $${r.cpa}, CPC $${r.cpc}`).join('\n')}
 
-Return ONLY this JSON (no backticks, no extra text):
+Return ONLY this JSON:
 {
-  "headline_insight": "One sharp sentence: the single most important finding about this campaign's performance",
-  "top_performer": {
-    "channel": "channel name",
-    "why": "2 sentences: why this channel is winning and what's driving it"
-  },
-  "biggest_waste": {
-    "channel": "channel name",
-    "why": "2 sentences: why this channel is underperforming and what to do about it"
-  },
-  "budget_move": "2-3 sentences: specific reallocation recommendation with dollar amounts or percentages",
-  "quick_win": "2 sentences: one tactical action they can do THIS WEEK to lift results",
-  "channel_scores": [
-    {"channel": "name", "score": 0-100, "recommendation": "Scale/Hold/Cut/Test"}
-  ],
-  "ad_copy": {
-    "headline": "A punchy, data-informed ad headline for the top-performing channel (under 10 words)",
-    "body": "2-3 sentence ad copy for the top channel. Make it feel like it was written by a human who understands gaming/tech audiences.",
-    "cta": "A clear, action-driven CTA"
-  }
+  "headline_insight": "One sharp sentence — the single most important finding",
+  "top_performer": { "channel": "name", "source": "source name", "why": "2 sentences explaining why it's winning" },
+  "biggest_waste": { "channel": "name", "source": "source name", "why": "2 sentences on why it underperforms and what to fix" },
+  "budget_move": "2-3 sentences: specific reallocation with amounts or percentages",
+  "quick_win": "2 sentences: one action executable this week",
+  "channel_scores": [{ "channel": "name", "source": "source", "score": 0-100, "recommendation": "Scale/Hold/Cut/Test" }],
+  "ad_copy": { "headline": "Punchy headline for top channel (under 10 words)", "body": "2-3 sentences of ad copy for gaming/tech audience", "cta": "Action-driven CTA" }
 }`;
 
   const btn = document.getElementById('run-btn');
-  btn.disabled = true;
-  btn.classList.add('loading');
+  btn.disabled = true; btn.classList.add('loading');
   btn.innerHTML = '<span class="spinner"></span>Analyzing with Claude...';
 
-  const outputBody = document.getElementById('output-body');
-  outputBody.innerHTML = `<div style="display:flex;align-items:center;gap:10px;color:var(--text2);font-family:var(--mono);font-size:12px;padding:8px 0;"><span class="spinner"></span>Claude is analyzing your campaign data<span class="cursor"></span></div>`;
+  const out = document.getElementById('output-body');
+  out.innerHTML = `<div style="display:flex;align-items:center;gap:10px;color:var(--text2);font-family:var(--mono);font-size:12px;padding:8px 0;"><span class="spinner"></span>Claude is analyzing ${data.length} channels across ${sourceList.length} source${sourceList.length>1?'s':''}<span class="cursor"></span></div>`;
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role: 'user', content: prompt }] })
     });
-
     const apiData = await res.json();
     const raw = apiData?.content?.[0]?.text || '';
     let parsed;
-    try {
-      parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
-    } catch(e) {
-      throw new Error('Could not parse AI response');
-    }
-
-    renderResults(parsed, data);
+    try { parsed = JSON.parse(raw.replace(/```json|```/g,'').trim()); }
+    catch(e) { throw new Error('Could not parse AI response. Try again.'); }
+    renderResults(parsed);
   } catch(err) {
-    outputBody.innerHTML = `<div style="color:var(--warn);font-family:var(--mono);font-size:12px;padding:12px 0;">⚠ Error: ${err.message}. Please try again.</div>`;
+    out.innerHTML = `<div style="color:var(--warn);font-family:var(--mono);font-size:12px;padding:12px 0;">⚠ ${err.message}</div>`;
   } finally {
-    btn.disabled = false;
-    btn.classList.remove('loading');
+    btn.disabled = false; btn.classList.remove('loading');
     btn.innerHTML = '⚡ Re-Analyze';
   }
 }
 
-function scoreColor(s) {
-  if (s >= 70) return '#00e5a0';
-  if (s >= 40) return '#7c6dfa';
-  return '#ff6b35';
-}
+// ─── Render results ───────────────────────────────────────────────────────────
+function scoreColor(s) { return s>=70 ? '#00e5a0' : s>=40 ? '#7c6dfa' : '#ff6b35'; }
 
-function renderResults(d, rawData) {
+function renderResults(d) {
   const body = document.getElementById('output-body');
 
-  const scoresHtml = (d.channel_scores || []).map(ch => {
+  const scoresHtml = (d.channel_scores||[]).map(ch => {
     const pct = Math.min(100, Math.max(0, ch.score));
     const col = scoreColor(pct);
+    const srcColor = (sources.find(s => s.name === ch.source)||{}).color || '#4a4a52';
     return `<div class="channel-row">
-      <div class="ch-name">${ch.channel}</div>
-      <div class="ch-bar-bg"><div class="ch-bar-fill" style="width:${pct}%;background:${col};"></div></div>
+      <div class="ch-name" title="${esc(ch.channel)}">${esc(ch.channel)}</div>
+      <div class="ch-source" style="color:${srcColor}" title="${esc(ch.source)}">${esc(ch.source)}</div>
+      <div class="ch-bar-bg"><div class="ch-bar-fill" style="width:0%;background:${col};" data-w="${pct}"></div></div>
       <div class="ch-score" style="color:${col};">${pct}</div>
-      <div class="ch-rec" style="color:${col};">${ch.recommendation}</div>
+      <div class="ch-rec" style="color:${col};">${esc(ch.recommendation)}</div>
     </div>`;
   }).join('');
 
   body.innerHTML = `
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px 18px;margin-bottom:20px;border-left:3px solid var(--accent);">
-      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:5px;">Key finding</div>
-      <div style="font-family:var(--head);font-size:15px;font-weight:600;color:var(--text);line-height:1.5;">${d.headline_insight}</div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:13px 17px;margin-bottom:18px;border-left:3px solid var(--accent);">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;">Key finding</div>
+      <div style="font-family:var(--head);font-size:15px;font-weight:600;color:var(--text);line-height:1.5;">${esc(d.headline_insight)}</div>
     </div>
-
     <div class="result-grid">
       <div class="result-card green">
         <div class="rc-label">🏆 Top Performer</div>
-        <div class="rc-content"><strong>${d.top_performer?.channel}</strong><br>${d.top_performer?.why}</div>
+        <div class="rc-content"><strong>${esc(d.top_performer?.channel)}</strong> <span style="color:var(--text3);font-size:11px;">(${esc(d.top_performer?.source)})</span><br>${esc(d.top_performer?.why)}</div>
       </div>
       <div class="result-card orange">
         <div class="rc-label">⚠ Biggest Waste</div>
-        <div class="rc-content"><span class="warn-text">${d.biggest_waste?.channel}</span><br>${d.biggest_waste?.why}</div>
+        <div class="rc-content"><span class="warn-text">${esc(d.biggest_waste?.channel)}</span> <span style="color:var(--text3);font-size:11px;">(${esc(d.biggest_waste?.source)})</span><br>${esc(d.biggest_waste?.why)}</div>
       </div>
       <div class="result-card purple">
         <div class="rc-label">💡 Quick Win This Week</div>
-        <div class="rc-content">${d.quick_win}</div>
+        <div class="rc-content">${esc(d.quick_win)}</div>
       </div>
     </div>
-
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:16px;">
-      <div class="rc-label" style="margin-bottom:8px;">📊 Budget Reallocation Recommendation</div>
-      <div style="font-size:13px;color:var(--text);line-height:1.7;">${d.budget_move}</div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:15px 17px;margin-bottom:14px;">
+      <div class="rc-label" style="margin-bottom:7px;">📊 Budget Reallocation</div>
+      <div style="font-size:13px;color:var(--text);line-height:1.7;">${esc(d.budget_move)}</div>
     </div>
-
-    <div class="channel-scores">
-      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Channel performance scores</div>
+    <div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:9px;">Channel scores by source</div>
       ${scoresHtml}
     </div>
-
-    <div class="copy-block" style="margin-top:20px;">
-      <div class="copy-block-label">✍ AI-Generated Ad Copy — ${d.top_performer?.channel}</div>
+    <div class="copy-block">
+      <div class="copy-block-label">✍ AI-Generated Ad Copy — ${esc(d.top_performer?.channel)}</div>
       <button class="copy-btn" onclick="copyCopy()">Copy</button>
-      <div style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500;margin-bottom:6px;">${d.ad_copy?.headline}</div>
-      <p style="font-style:normal;color:var(--text);font-size:13px;line-height:1.75;">${d.ad_copy?.body}</p>
-      <div style="margin-top:8px;display:inline-block;background:var(--accent);color:#000;padding:5px 14px;border-radius:5px;font-family:var(--mono);font-size:11px;font-weight:500;">${d.ad_copy?.cta}</div>
+      <div style="font-family:var(--mono);font-size:13px;color:var(--accent);font-weight:500;margin-bottom:6px;" id="copy-hl">${esc(d.ad_copy?.headline)}</div>
+      <p style="font-size:13px;color:var(--text);line-height:1.75;" id="copy-body">${esc(d.ad_copy?.body)}</p>
+      <div style="margin-top:9px;display:inline-block;background:var(--accent);color:#000;padding:5px 14px;border-radius:5px;font-family:var(--mono);font-size:11px;font-weight:500;">${esc(d.ad_copy?.cta)}</div>
     </div>`;
 
   // Animate bars
-  setTimeout(() => {
-    document.querySelectorAll('.ch-bar-fill').forEach(b => {
-      const w = b.style.width;
-      b.style.width = '0';
-      setTimeout(() => b.style.width = w, 50);
-    });
-  }, 50);
+  setTimeout(() => document.querySelectorAll('.ch-bar-fill').forEach(b => {
+    b.style.width = b.dataset.w + '%';
+  }), 80);
 }
 
 function copyCopy() {
-  const headline = document.querySelector('.copy-block .rc-label + button + div')?.textContent || '';
-  const body = document.querySelector('.copy-block p')?.textContent || '';
-  navigator.clipboard.writeText(headline + '\n\n' + body).then(() => {
+  const hl   = document.getElementById('copy-hl')?.textContent || '';
+  const body = document.getElementById('copy-body')?.textContent || '';
+  navigator.clipboard.writeText(hl + '\n\n' + body).then(() => {
     const btn = document.querySelector('.copy-btn');
     btn.textContent = 'Copied!';
     setTimeout(() => btn.textContent = 'Copy', 2000);
   });
 }
+
+// ─── Utils ────────────────────────────────────────────────────────────────────
+function esc(str) {
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── Boot ─────────────────────────────────────────────────────────────────────
+init();
 </script>
 </body>
 </html>
